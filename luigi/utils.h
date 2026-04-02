@@ -447,6 +447,11 @@ int _UIColumnToByte(const char *string, int column, int bytes, int tabSize)
 
 #endif // UI_IMPLEMENTATION
 
+#ifdef UI_FREETYPE
+    #define GLYPH_ADVANCE(c) (ui.activeFont->isFreeType ? ui.activeFont->glyphAdvance[(c)] : ui.activeFont->glyphWidth)
+#else /* NOT UI_FREETYPE */
+    #define GLYPH_ADVANCE(c) (ui.activeFont->glyphWidth)
+#endif /* UI_FREETYPE */
 
 #ifdef __cplusplus
 }

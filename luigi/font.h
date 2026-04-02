@@ -22,7 +22,6 @@ extern "C" {
 # include <freetype/ftbitmap.h>
 
 
-extern FT_Library ft;
 #endif
 
 
@@ -41,7 +40,7 @@ typedef struct UIFont {
 # else
     FT_Bitmap glyphs[128];
     bool      glyphsRendered[128];
-    int       glyphOffsetsX[128], glyphOffsetsY[128];
+    int       glyphOffsetsX[128], glyphOffsetsY[128], glyphAdvance[128];
 # endif
 #endif
 } UIFont;

@@ -7,11 +7,8 @@
 
 
 #ifdef UI_SSE2
-# include <xmmintrin.h>
+    #include <xmmintrin.h>
 #endif
-
-
-//
 
 
 void UIDrawBlock(UIPainter *painter, UIRectangle rectangle, uint32_t color)
@@ -298,6 +295,9 @@ void UIDrawString(UIPainter *painter, UIRectangle r, const char *string, ptrdiff
         }
     }
 
+    printf("UIDrawString selectFrom=%d selectTo=%d bytes=%d\n", selectFrom, selectTo, (int)bytes);
+    fflush(stdout);
+
     while (j < bytes) {
         ptrdiff_t bytesConsumed = 1;
 #ifdef UI_UNICODE
@@ -310,11 +310,14 @@ void UIDrawString(UIPainter *painter, UIRectangle r, const char *string, ptrdiff
         uint32_t colorText = color;
 
         if (i >= selectFrom && i < selectTo) {
-            int w = ui.activeFont->glyphWidth;
+#ifdef UI_FREETYPE
+    if (ui.activeFont->isFreeType) UIEnsureGlyphRendered(ui.activeFont, c);
+#endif
+            int w = GLYPH_ADVANCE(c);
             if (c == '\t') {
                 int ii = i;
                 while (++ii & 3)
-                    w += ui.activeFont->glyphWidth;
+                    w += GLYPH_ADVANCE(c);
             }
             UIDrawBlock(painter, UI_RECT_4(x, x + w, y, y + height), selection->colorBackground);
             colorText = selection->colorText;
@@ -327,12 +330,12 @@ void UIDrawString(UIPainter *painter, UIRectangle r, const char *string, ptrdiff
         if (selection && selection->carets[0] == i) {
             UIDrawInvert(painter, UI_RECT_4(x, x + 1, y, y + height));
         }
-
-        x += ui.activeFont->glyphWidth, i++;
-
+        
+        x += GLYPH_ADVANCE(c), i++;
+        
         if (c == '\t') {
             while (i & 3)
-                x += ui.activeFont->glyphWidth, i++;
+                x += GLYPH_ADVANCE(c);
         }
 
         j += bytesConsumed;
@@ -345,22 +348,53 @@ void UIDrawString(UIPainter *painter, UIRectangle r, const char *string, ptrdiff
     painter->clip = oldClip;
 }
 
-
-void UIDrawBorder(UIPainter *painter, UIRectangle r, uint32_t borderColor, UIRectangle borderSize)
+uint32_t
+shade_color(uint32_t color, uint8_t shade, float t)
 {
-    UIDrawBlock(painter, UI_RECT_4(r.l, r.r, r.t, r.t + borderSize.t), borderColor);
-    UIDrawBlock(painter, UI_RECT_4(r.l, r.l + borderSize.l, r.t + borderSize.t, r.b - borderSize.b),
-                borderColor);
-    UIDrawBlock(painter, UI_RECT_4(r.r - borderSize.r, r.r, r.t + borderSize.t, r.b - borderSize.b),
-                borderColor);
-    UIDrawBlock(painter, UI_RECT_4(r.l, r.r, r.b - borderSize.b, r.b), borderColor);
+    uint8_t
+        r = (color >> 16) & 0xFF,
+        g = (color >>  8) & 0xFF,
+        b = (color >>  0) & 0xFF;
+
+        r = (uint8_t)(r + (shade - r) * t);
+        g = (uint8_t)(g + (shade - g) * t);
+        b = (uint8_t)(b + (shade - b) * t);
+
+        return (r << 16) | (g << 8) | (b << 0) | (color & 0xFF000000);
+}
+
+void UIDrawBorder(UIPainter *painter, UIRectangle r, uint32_t main_color, UIRectangle borderSize)
+{
+    uint32_t
+        highlight = shade_color(main_color, 255, 0.25f),
+        shadow    = shade_color(main_color,   0, 0.5f);
+    UIDrawBlock(
+            painter, 
+            UI_RECT_4(r.l, r.r, r.t, r.t + borderSize.t), 
+            highlight
+        );
+    UIDrawBlock(
+            painter, 
+            UI_RECT_4(r.l, r.l + borderSize.l, r.t + borderSize.t, r.b - borderSize.b),
+            highlight
+        );
+    UIDrawBlock(
+            painter, 
+            UI_RECT_4(r.r - borderSize.r, r.r, r.t + borderSize.t, r.b - borderSize.b),
+            shadow
+        );
+    UIDrawBlock(
+            painter, 
+            UI_RECT_4(r.l, r.r, r.b - borderSize.b, r.b), 
+            shadow
+        );
 }
 
 
 void UIDrawRectangle(UIPainter *painter, UIRectangle r, uint32_t mainColor, uint32_t borderColor,
                      UIRectangle borderSize)
 {
-    UIDrawBorder(painter, r, borderColor, borderSize);
+    UIDrawBorder(painter, r, mainColor, borderSize);
     UIDrawBlock(
         painter,
         UI_RECT_4(r.l + borderSize.l, r.r - borderSize.r, r.t + borderSize.t, r.b - borderSize.b),

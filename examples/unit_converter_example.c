@@ -59,7 +59,7 @@ int CategoryTableMessage(UIElement *element, UIMessage message, int di, void *dp
 	if (message == UI_MSG_TABLE_GET_ITEM) {
 		UITableGetItem *m = (UITableGetItem *) dp;
 		m->isSelected = category == m->index;
-		return snprintf(m->buffer, m->bufferBytes, "%s", categories[m->index]);
+		return snprintf(m->buffer, m->bufferBytes, "%s", categories[m->index].name);
 	} else if (message == UI_MSG_LEFT_DOWN || message == UI_MSG_MOUSE_DRAG) {
 		int hit = UITableHitTest((UITable *) element, element->window->cursorX, element->window->cursorY);
 		if (hit != -1) category = hit;
@@ -102,10 +102,22 @@ int InputMessage(UIElement *element, UIMessage message, int di, void *dp) {
 	return 0;
 }
 
+const char *FindSystemFont(const char *name) {
+    char cmd[256];
+    snprintf(cmd, sizeof(cmd), "fc-match --format=%%{file} '%s'", name);
+    FILE *f = popen(cmd, "r");
+    static char path[512];
+    fgets(path, sizeof(path), f);
+    pclose(f);
+    return path;
+}
+
 int main() {
-	UIInitialise();
-	UIWindowCreate(0, UI_ELEMENT_PARENT_PUSH, "Converter", 500, 300);
-	UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_GRAY | UI_PANEL_EXPAND | UI_PANEL_MEDIUM_SPACING);
+	Luigi_InitConfig config = {false};
+	Luigi_Init(&config);
+	UIFontActivate(UIFontCreate(FindSystemFont("sans"), 11));
+	Luigi_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, "Converter", 500, 300);
+	UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_COLOR_1 | UI_PANEL_EXPAND | UI_PANEL_MEDIUM_SPACING);
 	UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_EXPAND | UI_PANEL_HORIZONTAL | UI_ELEMENT_V_FILL);
 	UITable *table = UITableCreate(0, UI_ELEMENT_H_FILL, "Category");
 	table->e.messageUser = CategoryTableMessage;
@@ -124,5 +136,5 @@ int main() {
 	UILabelCreate(0, 0, " --> ", -1);
 	output = UILabelCreate(0, UI_ELEMENT_H_FILL, 0, -1);
 	UIElementFocus(&input->e);
-	return UIMessageLoop();
+	return Luigi_Loop();
 }

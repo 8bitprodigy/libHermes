@@ -13,7 +13,21 @@
 
 
 //
-
+static int 
+_UITextboxHitTest(UITextbox *textbox, int targetX) 
+{
+    int x = 0;
+    for (int j = 0; j < textbox->bytes; j++) {
+        unsigned char c = (unsigned char)textbox->string[j];
+#ifdef UI_FREETYPE
+        if (ui.activeFont->isFreeType) UIEnsureGlyphRendered(ui.activeFont, c);
+#endif
+        int advance = GLYPH_ADVANCE(c);
+        if (targetX < x + advance / 2) return j;
+        x += advance;
+    }
+    return textbox->bytes;
+}
 
 static int _UITextboxMessage(UIElement *element, UIMessage message, int di, void *dp)
 {
@@ -60,20 +74,18 @@ static int _UITextboxMessage(UIElement *element, UIMessage message, int di, void
         selection.colorBackground = ui.theme.selected;
         selection.colorText       = ui.theme.textSelected;
         textBounds.l -= textbox->scroll;
-
         UIDrawString((UIPainter *)dp, textBounds, textbox->string, textbox->bytes,
                      (element->flags & UI_ELEMENT_DISABLED) ? ui.theme.textDisabled : ui.theme.text,
                      UI_ALIGN_LEFT, element->window->focused == element ? &selection : NULL);
     } else if (message == UI_MSG_GET_CURSOR) {
         return UI_CURSOR_TEXT;
     } else if (message == UI_MSG_LEFT_DOWN) {
-        int column = (element->window->cursorX - element->bounds.l + textbox->scroll -
-                      UI_SIZE_TEXTBOX_MARGIN * element->window->scale +
-                      ((float)ui.activeFont->glyphWidth / 2)) /
-                     ui.activeFont->glyphWidth;
-        textbox->carets[0] = textbox->carets[1] =
-            column <= 0 ? 0 : _UITextboxColumnToByte(textbox->string, column, textbox->bytes);
+        int targetX = element->window->cursorX - element->bounds.l + textbox->scroll
+                  - UI_SIZE_TEXTBOX_MARGIN * element->window->scale;
+        textbox->carets[0] = textbox->carets[1] = _UITextboxHitTest(textbox, targetX);
         UIElementFocus(element);
+        UIElementRepaint(element, NULL); 
+        return 1;
     } else if (message == UI_MSG_UPDATE) {
         UIElementRepaint(element, NULL);
     } else if (message == UI_MSG_DEALLOCATE) {
@@ -137,6 +149,11 @@ static int _UITextboxMessage(UIElement *element, UIMessage message, int di, void
             UIElementRepaint(element, NULL);
             return 1;
         }
+    } else if (message == UI_MSG_MOUSE_DRAG) {
+        int targetX = element->window->cursorX - element->bounds.l + textbox->scroll
+                    - UI_SIZE_TEXTBOX_MARGIN * element->window->scale;
+        textbox->carets[0] = _UITextboxHitTest(textbox, targetX);
+        UIElementRepaint(element, NULL);
     } else if (message == UI_MSG_RIGHT_DOWN) {
         int c0 = textbox->carets[0], c1 = textbox->carets[1];
         _UITextboxMessage(element, UI_MSG_LEFT_DOWN, di, dp);

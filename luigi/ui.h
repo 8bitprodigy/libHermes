@@ -31,6 +31,10 @@ extern struct Luigi ui;
 struct Luigi {
     Luigi_Platform platform;
 
+#ifdef UI_FREETYPE
+    FT_Library ft;
+#endif
+
     UIWindow *windows;
     UITheme   theme;
 

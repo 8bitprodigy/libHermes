@@ -6,9 +6,7 @@
 #include <stdint.h>
 
 
-#ifdef UI_FREETYPE
-static FT_Library ft = {0};
-#endif
+
 
 
 // Taken from https://commons.wikimedia.org/wiki/File:Codepage-437.png
@@ -286,18 +284,19 @@ void UIDrawGlyph(UIPainter *painter, int x0, int y0, int c, uint32_t color)
 void UIFontDestroy(UIFont *font)
 {
 #ifdef UI_FREETYPE
+# ifdef UI_UNICODE
     for (uintptr_t i = 0; i < _UNICODE_MAX_CODEPOINT; i++) {
         if (font->glyphsRendered[i]) {
             FT_Bitmap_Done(ui.ft, &font->glyphs[i]);
         }
     }
-
-    FT_Done_Face(font->font);
     UI_FREE(font->glyphs);
     UI_FREE(font->glyphsRendered);
     UI_FREE(font->glyphOffsetsX);
     UI_FREE(font->glyphOffsetsY);
     UI_FREE(font->glyphAdvance);
+# endif
+    FT_Done_Face(font->font);
 #endif
     UI_FREE(font);
 }

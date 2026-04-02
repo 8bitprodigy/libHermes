@@ -496,12 +496,12 @@ int UIDrawStringHighlighted(UIPainter *painter, UIRectangle lineBounds, const ch
         int oldX = x;
 
         if (c == '\t') {
-            x += ui.activeFont->glyphWidth, ti++;
+            x += GLYPH_ADVANCE(c), ti++;
             while (ti % tabSize)
-                x += ui.activeFont->glyphWidth, ti++, j++;
+                x += GLYPH_ADVANCE(c), ti++, j++;
         } else {
             UIDrawGlyph(painter, x, y, c, colors[tokenType]);
-            x += ui.activeFont->glyphWidth, ti++;
+            x += GLYPH_ADVANCE(c), ti++;
         }
 
         if (selection && j >= selection->carets[0] && j < selection->carets[1]) {
