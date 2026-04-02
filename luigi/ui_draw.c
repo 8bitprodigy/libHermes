@@ -295,9 +295,6 @@ void UIDrawString(UIPainter *painter, UIRectangle r, const char *string, ptrdiff
         }
     }
 
-    printf("UIDrawString selectFrom=%d selectTo=%d bytes=%d\n", selectFrom, selectTo, (int)bytes);
-    fflush(stdout);
-
     while (j < bytes) {
         ptrdiff_t bytesConsumed = 1;
 #ifdef UI_UNICODE
