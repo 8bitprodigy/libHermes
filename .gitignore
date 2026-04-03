@@ -49,3 +49,6 @@
 .clangd*
 compile_flags.txt
 CMakeUserPresets.json
+
+bin/
+bin/*

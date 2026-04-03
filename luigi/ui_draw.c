@@ -360,10 +360,11 @@ shade_color(uint32_t color, uint8_t shade, float t)
         return (r << 16) | (g << 8) | (b << 0) | (color & 0xFF000000);
 }
 
-void UIDrawBorder(UIPainter *painter, UIRectangle r, uint32_t main_color, UIRectangle borderSize)
+void 
+UIDrawBorder(UIPainter *painter, UIRectangle r, uint32_t main_color, UIRectangle borderSize)
 {
     uint32_t
-        highlight = shade_color(main_color, 255, 0.25f),
+        highlight = shade_color(main_color, 255, 0.125f),
         shadow    = shade_color(main_color,   0, 0.5f);
     UIDrawBlock(
             painter, 
@@ -388,8 +389,14 @@ void UIDrawBorder(UIPainter *painter, UIRectangle r, uint32_t main_color, UIRect
 }
 
 
-void UIDrawRectangle(UIPainter *painter, UIRectangle r, uint32_t mainColor, uint32_t borderColor,
-                     UIRectangle borderSize)
+void 
+UIDrawRectangle(
+    UIPainter   *painter, 
+    UIRectangle  r, 
+    uint32_t     mainColor, 
+    uint32_t     borderColor,
+    UIRectangle  borderSize
+)
 {
     UIDrawBorder(painter, r, mainColor, borderSize);
     UIDrawBlock(
@@ -399,17 +406,26 @@ void UIDrawRectangle(UIPainter *painter, UIRectangle r, uint32_t mainColor, uint
 }
 
 
-void UIDrawControlDefault(UIPainter *painter, UIRectangle bounds, uint32_t mode, const char *label,
-                          ptrdiff_t labelBytes, double position, float scale)
+void 
+UIDrawControlDefault(
+    UIPainter   *painter, 
+    UIRectangle  bounds, 
+    uint32_t     mode, 
+    const char  *label,
+    ptrdiff_t    labelBytes, 
+    double       position, 
+    float        scale
+)
 {
-    bool     checked       = mode & UI_DRAW_CONTROL_STATE_CHECKED;
-    bool     disabled      = mode & UI_DRAW_CONTROL_STATE_DISABLED;
-    bool     focused       = mode & UI_DRAW_CONTROL_STATE_FOCUSED;
-    bool     hovered       = mode & UI_DRAW_CONTROL_STATE_HOVERED;
-    bool     indeterminate = mode & UI_DRAW_CONTROL_STATE_INDETERMINATE;
-    bool     pressed       = mode & UI_DRAW_CONTROL_STATE_PRESSED;
-    bool     selected      = mode & UI_DRAW_CONTROL_STATE_SELECTED;
-    uint32_t which         = mode & UI_DRAW_CONTROL_TYPE_MASK;
+    bool     
+        checked       = mode & UI_DRAW_CONTROL_STATE_CHECKED,
+        disabled      = mode & UI_DRAW_CONTROL_STATE_DISABLED,
+        focused       = mode & UI_DRAW_CONTROL_STATE_FOCUSED,
+        hovered       = mode & UI_DRAW_CONTROL_STATE_HOVERED,
+        indeterminate = mode & UI_DRAW_CONTROL_STATE_INDETERMINATE,
+        pressed       = mode & UI_DRAW_CONTROL_STATE_PRESSED,
+        selected      = mode & UI_DRAW_CONTROL_STATE_SELECTED;
+    uint32_t which    = mode & UI_DRAW_CONTROL_TYPE_MASK;
 
     uint32_t buttonColor     = disabled               ? ui.theme.buttonDisabled
                                : (pressed && hovered) ? ui.theme.buttonPressed
@@ -419,95 +435,110 @@ void UIDrawControlDefault(UIPainter *painter, UIRectangle bounds, uint32_t mode,
     uint32_t buttonTextColor = disabled                           ? ui.theme.textDisabled
                                : buttonColor == ui.theme.selected ? ui.theme.textSelected
                                                                   : ui.theme.text;
-
-    if (which == UI_DRAW_CONTROL_CHECKBOX) {
-        uint32_t    color = buttonColor, textColor = buttonTextColor;
-        int         midY = (bounds.t + bounds.b) / 2;
-        UIRectangle boxBounds =
-            UI_RECT_4(bounds.l, bounds.l + UI_SIZE_CHECKBOX_BOX, midY - UI_SIZE_CHECKBOX_BOX / 2,
-                      midY + UI_SIZE_CHECKBOX_BOX / 2);
-        UIDrawRectangle(painter, boxBounds, color, ui.theme.border, UI_RECT_1(1));
-        UIDrawString(painter, UIRectangleAdd(boxBounds, UI_RECT_4(1, 0, 0, 0)),
-                     checked         ? "*"
-                     : indeterminate ? "-"
-                                     : " ",
-                     -1, textColor, UI_ALIGN_CENTER, NULL);
-        UIDrawString(
-            painter,
-            UIRectangleAdd(bounds, UI_RECT_4(UI_SIZE_CHECKBOX_BOX + UI_SIZE_CHECKBOX_GAP, 0, 0, 0)),
-            label, labelBytes, disabled ? ui.theme.textDisabled : ui.theme.text, UI_ALIGN_LEFT,
-            NULL);
-    } else if (which == UI_DRAW_CONTROL_MENU_ITEM || which == UI_DRAW_CONTROL_DROP_DOWN ||
-               which == UI_DRAW_CONTROL_PUSH_BUTTON) {
-        uint32_t color = buttonColor, textColor = buttonTextColor;
-        int      borderSize = which == UI_DRAW_CONTROL_MENU_ITEM ? 0 : scale;
-        UIDrawRectangle(painter, bounds, color, ui.theme.border, UI_RECT_1(borderSize));
-
-        if (checked && !focused) {
-            UIDrawBlock(
+    switch (which) {
+    case UI_DRAW_CONTROL_CHECKBOX: {
+            uint32_t    color = buttonColor, textColor = buttonTextColor;
+            int         midY = (bounds.t + bounds.b) / 2;
+            UIRectangle boxBounds =
+                UI_RECT_4(bounds.l, bounds.l + UI_SIZE_CHECKBOX_BOX, midY - UI_SIZE_CHECKBOX_BOX / 2,
+                        midY + UI_SIZE_CHECKBOX_BOX / 2);
+            UIDrawRectangle(painter, boxBounds, color, ui.theme.border, UI_RECT_1(1));
+            UIDrawString(painter, UIRectangleAdd(boxBounds, UI_RECT_4(1, 0, 0, 0)),
+                        checked         ? "*"
+                        : indeterminate ? "-"
+                                        : " ",
+                        -1, textColor, UI_ALIGN_CENTER, NULL);
+            UIDrawString(
                 painter,
-                UIRectangleAdd(bounds, UI_RECT_1I((int)(UI_SIZE_BUTTON_CHECKED_AREA * scale))),
-                ui.theme.buttonPressed);
+                UIRectangleAdd(bounds, UI_RECT_4(UI_SIZE_CHECKBOX_BOX + UI_SIZE_CHECKBOX_GAP, 0, 0, 0)),
+                label, labelBytes, disabled ? ui.theme.textDisabled : ui.theme.text, UI_ALIGN_LEFT,
+                NULL);
+            break;
         }
+    case UI_DRAW_CONTROL_MENU_ITEM:    /* FALL THROUGH */
+    case UI_DRAW_CONTROL_DROP_DOWN:    /* FALL THROUGH */
+    case UI_DRAW_CONTROL_PUSH_BUTTON: {
+            uint32_t color = buttonColor, textColor = buttonTextColor;
+            int      borderSize = which == UI_DRAW_CONTROL_MENU_ITEM ? 0 : scale;
+            UIDrawRectangle(painter, bounds, color, ui.theme.border, UI_RECT_1(borderSize));
 
-        UIRectangle innerBounds =
-            UIRectangleAdd(bounds, UI_RECT_2I((int)(UI_SIZE_MENU_ITEM_MARGIN * scale), 0));
-
-        if (which == UI_DRAW_CONTROL_MENU_ITEM) {
-            if (labelBytes == -1) {
-                labelBytes = _UIStringLength(label);
+            if (checked && !focused) {
+                UIDrawBlock(
+                    painter,
+                    UIRectangleAdd(bounds, UI_RECT_1I((int)(UI_SIZE_BUTTON_CHECKED_AREA * scale))),
+                    ui.theme.buttonPressed);
             }
 
-            int tab = 0;
-            for (; tab < labelBytes && label[tab] != '\t'; tab++)
-                ;
+            UIRectangle innerBounds =
+                UIRectangleAdd(bounds, UI_RECT_2I((int)(UI_SIZE_MENU_ITEM_MARGIN * scale), 0));
 
-            UIDrawString(painter, innerBounds, label, tab, textColor, UI_ALIGN_LEFT, NULL);
+            if (which == UI_DRAW_CONTROL_MENU_ITEM) {
+                if (labelBytes == -1) {
+                    labelBytes = _UIStringLength(label);
+                }
 
-            if (labelBytes > tab) {
-                UIDrawString(painter, innerBounds, label + tab + 1, labelBytes - tab - 1, textColor,
-                             UI_ALIGN_RIGHT, NULL);
+                int tab = 0;
+                for (; tab < labelBytes && label[tab] != '\t'; tab++)
+                    ;
+
+                UIDrawString(painter, innerBounds, label, tab, textColor, UI_ALIGN_LEFT, NULL);
+
+                if (labelBytes > tab) {
+                    UIDrawString(painter, innerBounds, label + tab + 1, labelBytes - tab - 1, textColor,
+                                UI_ALIGN_RIGHT, NULL);
+                }
+            } else if (which == UI_DRAW_CONTROL_DROP_DOWN) {
+                UIDrawString(painter, innerBounds, label, labelBytes, textColor, UI_ALIGN_LEFT, NULL);
+                UIDrawString(painter, innerBounds, "\x19", 1, textColor, UI_ALIGN_RIGHT, NULL);
+            } else {
+                UIDrawString(painter, bounds, label, labelBytes, textColor, UI_ALIGN_CENTER, NULL);
             }
-        } else if (which == UI_DRAW_CONTROL_DROP_DOWN) {
-            UIDrawString(painter, innerBounds, label, labelBytes, textColor, UI_ALIGN_LEFT, NULL);
-            UIDrawString(painter, innerBounds, "\x19", 1, textColor, UI_ALIGN_RIGHT, NULL);
-        } else {
-            UIDrawString(painter, bounds, label, labelBytes, textColor, UI_ALIGN_CENTER, NULL);
+            break;
         }
-    } else if (which == UI_DRAW_CONTROL_LABEL) {
+    case UI_DRAW_CONTROL_LABEL:
         UIDrawString(painter, bounds, label, labelBytes, ui.theme.text, UI_ALIGN_LEFT, NULL);
-    } else if (which == UI_DRAW_CONTROL_SPLITTER) {
-        UIRectangle borders =
-            (mode & UI_DRAW_CONTROL_STATE_VERTICAL) ? UI_RECT_2(0, 1) : UI_RECT_2(1, 0);
-        UIDrawRectangle(painter, bounds, ui.theme.buttonNormal, ui.theme.border, borders);
-    } else if (which == UI_DRAW_CONTROL_SCROLL_TRACK) {
+        break;
+    case UI_DRAW_CONTROL_SPLITTER: {
+            UIRectangle borders =
+                (mode & UI_DRAW_CONTROL_STATE_VERTICAL) ? UI_RECT_2(0, 1) : UI_RECT_2(1, 0);
+            UIDrawRectangle(painter, bounds, ui.theme.buttonNormal, ui.theme.border, borders);
+            break;
+        }
+    case UI_DRAW_CONTROL_SCROLL_TRACK: 
         if (disabled)
             UIDrawBlock(painter, bounds, ui.theme.panel1);
-    } else if (which == UI_DRAW_CONTROL_SCROLL_DOWN || which == UI_DRAW_CONTROL_SCROLL_UP) {
-        bool     isDown = which == UI_DRAW_CONTROL_SCROLL_DOWN;
-        uint32_t color  = pressed   ? ui.theme.buttonPressed
-                          : hovered ? ui.theme.buttonHovered
-                                    : ui.theme.panel2;
-        UIDrawRectangle(painter, bounds, color, ui.theme.border, UI_RECT_1(0));
+        
+        break;
+    case UI_DRAW_CONTROL_SCROLL_DOWN:    /* FALLTHROUGH */
+    case UI_DRAW_CONTROL_SCROLL_UP: {
+            bool     isDown = which == UI_DRAW_CONTROL_SCROLL_DOWN;
+            uint32_t color  = pressed   ? ui.theme.buttonPressed
+                            : hovered ? ui.theme.buttonHovered
+                                        : ui.theme.panel2;
+            UIDrawRectangle(painter, bounds, color, ui.theme.border, UI_RECT_1(0));
 
-        if (mode & UI_DRAW_CONTROL_STATE_VERTICAL) {
-            UIDrawGlyph(painter, (bounds.l + bounds.r - ui.activeFont->glyphWidth) / 2 + 1,
-                        isDown ? (bounds.b - ui.activeFont->glyphHeight - 2 * scale)
-                               : (bounds.t + 2 * scale),
-                        isDown ? 25 : 24, ui.theme.text);
-        } else {
-            UIDrawGlyph(painter,
-                        isDown ? (bounds.r - ui.activeFont->glyphWidth - 2 * scale)
-                               : (bounds.l + 2 * scale),
-                        (bounds.t + bounds.b - ui.activeFont->glyphHeight) / 2, isDown ? 26 : 27,
-                        ui.theme.text);
+            if (mode & UI_DRAW_CONTROL_STATE_VERTICAL) {
+                UIDrawGlyph(painter, (bounds.l + bounds.r - ui.activeFont->glyphWidth) / 2 + 1,
+                            isDown ? (bounds.b - ui.activeFont->glyphHeight - 2 * scale)
+                                : (bounds.t + 2 * scale),
+                            isDown ? 25 : 24, ui.theme.text);
+            } else {
+                UIDrawGlyph(painter,
+                            isDown ? (bounds.r - ui.activeFont->glyphWidth - 2 * scale)
+                                : (bounds.l + 2 * scale),
+                            (bounds.t + bounds.b - ui.activeFont->glyphHeight) / 2, isDown ? 26 : 27,
+                            ui.theme.text);
+            }
+            break;
         }
-    } else if (which == UI_DRAW_CONTROL_SCROLL_THUMB) {
-        uint32_t color = pressed   ? ui.theme.buttonPressed
-                         : hovered ? ui.theme.buttonHovered
-                                   : ui.theme.buttonNormal;
-        UIDrawRectangle(painter, bounds, color, ui.theme.border, UI_RECT_1(2));
-    } else if (which == UI_DRAW_CONTROL_GAUGE) {
+    case UI_DRAW_CONTROL_SCROLL_THUMB: {
+            uint32_t color = pressed   ? ui.theme.buttonPressed
+                            : hovered ? ui.theme.buttonHovered
+                                    : ui.theme.buttonNormal;
+            UIDrawRectangle(painter, bounds, color, ui.theme.border, UI_RECT_1(2));
+            break;
+        }
+    case UI_DRAW_CONTROL_GAUGE:
         UIDrawRectangle(painter, bounds, ui.theme.buttonNormal, ui.theme.border, UI_RECT_1(1));
         UIRectangle filled = UIRectangleAdd(bounds, UI_RECT_1I(1));
         if (mode & UI_DRAW_CONTROL_STATE_VERTICAL) {
@@ -516,79 +547,95 @@ void UIDrawControlDefault(UIPainter *painter, UIRectangle bounds, uint32_t mode,
             filled.r = filled.l + UI_RECT_WIDTH(filled) * position;
         }
         UIDrawBlock(painter, filled, ui.theme.selected);
-    } else if (which == UI_DRAW_CONTROL_SLIDER) {
-        bool        vertical      = mode & UI_DRAW_CONTROL_STATE_VERTICAL;
-        int         centerX       = (bounds.r + bounds.l) / 2;
-        int         centerY       = (bounds.t + bounds.b) / 2;
-        int         center        = vertical ? centerX : centerY;
-        int         trackSize     = UI_SIZE_SLIDER_TRACK * scale;
-        int         thumbSize     = UI_SIZE_SLIDER_THUMB * scale;
-        int         thumbPosition = vertical ? (UI_RECT_HEIGHT(bounds) - thumbSize) * position
-                                             : (UI_RECT_WIDTH(bounds) - thumbSize) * position;
-        UIRectangle track         = vertical ? UI_RECT_4(center - (trackSize + 1) / 2,
-                                                         center + trackSize / 2, bounds.t, bounds.b)
-                                             : UI_RECT_4(bounds.l, bounds.r, center - (trackSize + 1) / 2,
-                                                         center + trackSize / 2);
-        UIDrawRectangle(painter, track, disabled ? ui.theme.buttonDisabled : ui.theme.buttonNormal,
-                        ui.theme.border, UI_RECT_1(1));
-        uint32_t    color = disabled  ? ui.theme.buttonDisabled
-                            : pressed ? ui.theme.buttonPressed
-                            : hovered ? ui.theme.buttonHovered
-                                      : ui.theme.buttonNormal;
-        UIRectangle thumb =
-            vertical ? UI_RECT_4(center - (thumbSize + 1) / 2, center + thumbSize / 2,
-                                 bounds.b - thumbPosition - thumbSize, bounds.b - thumbPosition)
-                     : UI_RECT_4(bounds.l + thumbPosition, bounds.l + thumbPosition + thumbSize,
-                                 center - (thumbSize + 1) / 2, center + thumbSize / 2);
-        UIDrawRectangle(painter, thumb, color, ui.theme.border, UI_RECT_1(1));
-    } else if (which == UI_DRAW_CONTROL_TEXTBOX) {
+        break;
+    case UI_DRAW_CONTROL_SLIDER: {
+            bool vertical     = mode & UI_DRAW_CONTROL_STATE_VERTICAL;
+            int         
+                centerX       = (bounds.r + bounds.l) / 2,
+                centerY       = (bounds.t + bounds.b) / 2,
+                center        = vertical ? centerX : centerY,
+                trackSize     = UI_SIZE_SLIDER_TRACK * scale,
+                thumbSize     = UI_SIZE_SLIDER_THUMB * scale,
+                thumbPosition = vertical ? (UI_RECT_HEIGHT(bounds) - thumbSize) * position
+                                                : (UI_RECT_WIDTH(bounds) - thumbSize) * position;
+            UIRectangle track = vertical ? UI_RECT_4(center - (trackSize + 1) / 2,
+                                                            center + trackSize / 2, bounds.t, bounds.b)
+                                                : UI_RECT_4(bounds.l, bounds.r, center - (trackSize + 1) / 2,
+                                                            center + trackSize / 2);
+            UIDrawRectangle(painter, track, disabled ? ui.theme.buttonDisabled : ui.theme.buttonNormal,
+                            ui.theme.border, UI_RECT_1(1));
+            uint32_t    color = disabled  ? ui.theme.buttonDisabled
+                                : pressed ? ui.theme.buttonPressed
+                                : hovered ? ui.theme.buttonHovered
+                                        : ui.theme.buttonNormal;
+            UIRectangle thumb =
+                vertical ? UI_RECT_4(center - (thumbSize + 1) / 2, center + thumbSize / 2,
+                                    bounds.b - thumbPosition - thumbSize, bounds.b - thumbPosition)
+                        : UI_RECT_4(bounds.l + thumbPosition, bounds.l + thumbPosition + thumbSize,
+                                    center - (thumbSize + 1) / 2, center + thumbSize / 2);
+            UIDrawRectangle(painter, thumb, color, ui.theme.border, UI_RECT_1(1));
+            break;
+        }
+    case UI_DRAW_CONTROL_TEXTBOX:
         UIDrawRectangle(painter, bounds,
                         disabled  ? ui.theme.buttonDisabled
                         : focused ? ui.theme.textboxFocused
                                   : ui.theme.textboxNormal,
                         ui.theme.border, UI_RECT_1(1));
-    } else if (which == UI_DRAW_CONTROL_MODAL_POPUP) {
+        break;
+    case UI_DRAW_CONTROL_MODAL_POPUP:
         UIRectangle bounds2 = UIRectangleAdd(bounds, UI_RECT_1I(-1));
         UIDrawBorder(painter, bounds2, ui.theme.border, UI_RECT_1(1));
         UIDrawBorder(painter, UIRectangleAdd(bounds2, UI_RECT_1(1)), ui.theme.border, UI_RECT_1(1));
-    } else if (which == UI_DRAW_CONTROL_MENU) {
+        break;
+    case UI_DRAW_CONTROL_MENU:
         UIDrawBlock(painter, bounds, ui.theme.border);
-    } else if (which == UI_DRAW_CONTROL_TABLE_ROW) {
+        break;
+    case UI_DRAW_CONTROL_TABLE_ROW:
         if (selected)
             UIDrawBlock(painter, bounds, ui.theme.selected);
         else if (hovered)
             UIDrawBlock(painter, bounds, ui.theme.buttonHovered);
-    } else if (which == UI_DRAW_CONTROL_TABLE_CELL) {
+        break;
+    case UI_DRAW_CONTROL_TABLE_CELL:
         uint32_t textColor = selected ? ui.theme.textSelected : ui.theme.text;
         UIDrawString(painter, bounds, label, labelBytes, textColor, UI_ALIGN_LEFT, NULL);
-    } else if (which == UI_DRAW_CONTROL_TABLE_BACKGROUND) {
+        break;
+    case UI_DRAW_CONTROL_TABLE_BACKGROUND:
         UIDrawBlock(painter, bounds, ui.theme.panel2);
         UIDrawRectangle(
             painter,
             UI_RECT_4(bounds.l, bounds.r, bounds.t, bounds.t + (int)(UI_SIZE_TABLE_HEADER * scale)),
             ui.theme.panel1, ui.theme.border, UI_RECT_4(0, 0, 0, 1));
-    } else if (which == UI_DRAW_CONTROL_TABLE_HEADER) {
+        break;
+    case UI_DRAW_CONTROL_TABLE_HEADER:
         UIDrawString(painter, bounds, label, labelBytes, ui.theme.text, UI_ALIGN_LEFT, NULL);
         if (selected)
             UIDrawInvert(painter, bounds);
-    } else if (which == UI_DRAW_CONTROL_MDI_CHILD) {
-        UI_MDI_CHILD_CALCULATE_LAYOUT(bounds, scale);
-        UIRectangle borders = UI_RECT_4(borderSize, borderSize, titleSize, borderSize);
-        UIDrawBorder(painter, bounds, ui.theme.buttonNormal, borders);
-        UIDrawBorder(painter, bounds, ui.theme.border, UI_RECT_1((int)scale));
-        UIDrawBorder(painter, UIRectangleAdd(content, UI_RECT_1I(-1)), ui.theme.border,
-                     UI_RECT_1((int)scale));
-        UIDrawString(painter, title, label, labelBytes, ui.theme.text, UI_ALIGN_LEFT, NULL);
-    } else if (which == UI_DRAW_CONTROL_TAB) {
-        uint32_t    color = selected ? ui.theme.buttonPressed : ui.theme.buttonNormal;
-        UIRectangle t     = bounds;
-        if (selected)
-            t.b++, t.t--;
-        else
-            t.t++;
-        UIDrawRectangle(painter, t, color, ui.theme.border, UI_RECT_1(1));
-        UIDrawString(painter, bounds, label, labelBytes, ui.theme.text, UI_ALIGN_CENTER, NULL);
-    } else if (which == UI_DRAW_CONTROL_TAB_BAND) {
+        break;
+    case UI_DRAW_CONTROL_MDI_CHILD: {
+            UI_MDI_CHILD_CALCULATE_LAYOUT(bounds, scale);
+            UIRectangle borders = UI_RECT_4(borderSize, borderSize, titleSize, borderSize);
+            UIDrawBorder(painter, bounds, ui.theme.buttonNormal, borders);
+            UIDrawBorder(painter, bounds, ui.theme.border, UI_RECT_1((int)scale));
+            UIDrawBorder(painter, UIRectangleAdd(content, UI_RECT_1I(-1)), ui.theme.border,
+                        UI_RECT_1((int)scale));
+            UIDrawString(painter, title, label, labelBytes, ui.theme.text, UI_ALIGN_LEFT, NULL);
+            break;
+        }
+    case UI_DRAW_CONTROL_TAB: {
+            uint32_t    color = selected ? ui.theme.buttonPressed : ui.theme.buttonNormal;
+            UIRectangle t     = bounds;
+            if (selected)
+                t.b++, t.t--;
+            else
+                t.t++;
+            UIDrawRectangle(painter, t, color, ui.theme.border, UI_RECT_1(1));
+            UIDrawString(painter, bounds, label, labelBytes, ui.theme.text, UI_ALIGN_CENTER, NULL);
+            break;
+        }
+    case UI_DRAW_CONTROL_TAB_BAND:
         UIDrawRectangle(painter, bounds, ui.theme.panel1, ui.theme.border, UI_RECT_4(0, 0, 0, 1));
+        break;
     }
 }
