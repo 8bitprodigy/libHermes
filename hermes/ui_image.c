@@ -10,7 +10,13 @@
 #endif
 
 
-static int _UIImageDisplayMessage(UIElement *element, UIMessage message, int di, void *dp)
+static int 
+_UIImageDisplayMessage(
+    UIElement *element, 
+    UIMessage  message, 
+    int        di, 
+    void      *dp
+)
 {
     UIImageDisplay *display = (UIImageDisplay *)element;
 
@@ -73,37 +79,15 @@ static int _UIImageDisplayMessage(UIElement *element, UIMessage message, int di,
 #endif
 
         if (display->zoom == 1) {
-            uint32_t *lineStart = (uint32_t *)painter->bits + bounds.t * painter->width + bounds.l;
-            uint32_t *sourceLineStart =
-                display->bits + (bounds.l - image.l) + display->width * (bounds.t - image.t);
-
-            for (int i = 0; i < bounds.b - bounds.t;
-                 i++, lineStart += painter->width, sourceLineStart += display->width) {
-                uint32_t *destination = lineStart;
-                uint32_t *source      = sourceLineStart;
-                int       j           = bounds.r - bounds.l;
-
-#ifdef UI_AVX512
-                vint index = VISetN(0);
-
-                while (j >= VCOUNT) {
-                    VIStore(destination, index, VILoad(source, index));
-                    j -= VCOUNT;
-                    destination += VCOUNT;
-                    source += VCOUNT;
-                }
-#endif
-
-                while (j) {
-                    *destination = *source;
-                    j--;
-                    destination++;
-                    source++;
-                }
-            }
+            painter->draw_image(painter, bounds,
+                display->bits + (bounds.l - image.l) + display->width * (bounds.t - image.t),
+                display->width, display->height);
         } else if (element->flags & UI_IMAGE_DISPLAY_HQ_ZOOM_IN) {
+            int       dst_w       = UI_RECT_WIDTH(bounds);
+            int       dst_h       = UI_RECT_HEIGHT(bounds);
+            uint32_t *temp        = (uint32_t *)UI_MALLOC(dst_w * dst_h * 4);
+            uint32_t *destination = temp;
             float     zr          = 1.0f / display->zoom;
-            uint32_t *destination = (uint32_t *)painter->bits;
 
             for (int i = bounds.t; i < bounds.b; i++) {
                 float ty  = (i - image.t) * zr - 0.5f;
@@ -132,14 +116,11 @@ static int _UIImageDisplayMessage(UIElement *element, UIMessage message, int di,
                     tx0        = VIMax(tx0, VIZero());
                     tx1        = VIMin(tx1, VISet1(display->width - 1));
 
-# define GATHER_PIXEL(txv, tyv)                                                                    \
-     (VILoad(display->bits, VIAdd(VISet1((tyv) * display->width), (txv))))
                     vint s00 = GATHER_PIXEL(tx0, ty0);
                     vint s10 = GATHER_PIXEL(tx1, ty0);
                     vint s01 = GATHER_PIXEL(tx0, ty1);
                     vint s11 = GATHER_PIXEL(tx1, ty1);
 
-# define SPLIT_PIXEL(source, shift) (VICastFloat(VIAnd(VIShr((source), (shift)), VISet1(0xFF))))
                     vfloat s000 = SPLIT_PIXEL(s00, 0);
                     vfloat s001 = SPLIT_PIXEL(s00, 8);
                     vfloat s002 = SPLIT_PIXEL(s00, 16);
@@ -153,7 +134,6 @@ static int _UIImageDisplayMessage(UIElement *element, UIMessage message, int di,
                     vfloat s111 = SPLIT_PIXEL(s11, 8);
                     vfloat s112 = SPLIT_PIXEL(s11, 16);
 
-# define LERP_HORZ(from, to) (VFMulAdd(VFSub((to), (from)), txf, from))
                     vfloat m00 = LERP_HORZ(s000, s100);
                     vfloat m01 = LERP_HORZ(s001, s101);
                     vfloat m02 = LERP_HORZ(s002, s102);
@@ -161,14 +141,13 @@ static int _UIImageDisplayMessage(UIElement *element, UIMessage message, int di,
                     vfloat m11 = LERP_HORZ(s011, s111);
                     vfloat m12 = LERP_HORZ(s012, s112);
 
-# define LERP_VERT(from, to) (VFMulAdd(VFSub((to), (from)), VFSet1(tyf), from))
                     vfloat m0 = LERP_VERT(m00, m10);
                     vfloat m1 = LERP_VERT(m01, m11);
                     vfloat m2 = LERP_VERT(m02, m12);
                     vint   m  = VIOr(VIOr(VFRoundZero(m0), VIShl(VFRoundZero(m1), 8)),
                                      VIShl(VFRoundZero(m2), 16));
 
-                    VIStore(destination + i * painter->width, Ji, m);
+                    VIStore(destination + (i - bounds.t) * dst_w, Ji, m);
 
                     j += VCOUNT;
                     J += VFSet1(VCOUNT);
@@ -210,13 +189,18 @@ static int _UIImageDisplayMessage(UIElement *element, UIMessage message, int di,
                             m2 = (m12 - m02) * tyf + m02;
                     int32_t m  = m0 | (m1 << 8) | (m2 << 16);
 
-                    destination[i * painter->width + j] = m;
+                    destination[(i - bounds.t) * dst_w + (j - bounds.l)] = m;
                     j++;
                 }
             }
+
+            painter->draw_image(painter, bounds, temp, dst_w, dst_h);
+            UI_FREE(temp);
         } else {
-            float     zr          = 1.0f / display->zoom;
-            uint32_t *destination = (uint32_t *)painter->bits;
+            int       dst_w = UI_RECT_WIDTH(bounds);
+            int       dst_h = UI_RECT_HEIGHT(bounds);
+            uint32_t *temp  = (uint32_t *)UI_MALLOC(dst_w * dst_h * 4);
+            float     zr    = 1.0f / display->zoom;
 
             for (int i = bounds.t; i < bounds.b; i++) {
                 int ty = (i - image.t) * zr;
@@ -228,7 +212,7 @@ static int _UIImageDisplayMessage(UIElement *element, UIMessage message, int di,
 
                 while (j <= bounds.r - VCOUNT) {
                     vint tx = VFRoundZero(VFMul(J0, VFSet1(zr)));
-                    VIStore(destination + i * painter->width, J,
+                    VIStore(temp + (i - bounds.t) * dst_w, J,
                             VILoad(display->bits + ty * display->width, tx));
                     j += VCOUNT;
                     J += VISet1(VCOUNT);
@@ -237,11 +221,15 @@ static int _UIImageDisplayMessage(UIElement *element, UIMessage message, int di,
 #endif
 
                 while (j <= bounds.r - 1) {
-                    int tx                              = (j - image.l) * zr;
-                    destination[i * painter->width + j] = display->bits[ty * display->width + tx];
+                    int tx = (j - image.l) * zr;
+                    temp[(i - bounds.t) * dst_w + (j - bounds.l)] =
+                        display->bits[ty * display->width + tx];
                     j++;
                 }
             }
+
+            painter->draw_image(painter, bounds, temp, dst_w, dst_h);
+            UI_FREE(temp);
         }
     } else if (message == UI_MSG_MOUSE_WHEEL && (element->flags & UI_IMAGE_DISPLAY_INTERACTIVE)) {
         display->e.flags &= ~_UI_IMAGE_DISPLAY_ZOOM_FIT;

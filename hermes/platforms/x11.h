@@ -8,8 +8,9 @@ extern "C" {
 
 
 #ifdef UI_LINUX
-# include "../platform.h"
-# include "../ui_cursor.h"
+# include "platform.h"
+# include "ui_cursor.h"
+
 # include <X11/Xatom.h>
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>

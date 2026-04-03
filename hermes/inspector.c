@@ -1,4 +1,5 @@
 #include "inspector.h"
+#include "software_painter.h"
 #include "ui_code.h"
 #include "ui_draw.h"
 #include "ui_element.h"
@@ -6,6 +7,7 @@
 #include "ui_pane.h"
 #include "ui_table.h"
 #include "ui_window.h"
+
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -96,12 +98,7 @@ static int _UIInspectorTableMessage(UIElement *element, UIMessage message, int d
         }
 
         UIWindow *window     = inspector.inspectorTarget;
-        UIPainter painter    = {0};
-        window->updateRegion = window->e.bounds;
-        painter.bits         = window->bits;
-        painter.width        = window->width;
-        painter.height       = window->height;
-        painter.clip         = UI_RECT_2S(window->width, window->height);
+        UIPainter painter    = SWPainter_create(window->bits, window->width, window->height);
 
         for (int i = 0; i < window->width * window->height; i++) {
             window->bits[i] = 0xFF00FF;
@@ -116,6 +113,7 @@ static int _UIInspectorTableMessage(UIElement *element, UIMessage message, int d
         }
 
         _UIWindowEndPaint(window, &painter);
+        UI_FREE(painter.ctx);
     }
 
     return 0;

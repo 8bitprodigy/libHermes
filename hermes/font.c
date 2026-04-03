@@ -79,7 +79,8 @@ static const uint64_t __default_font[] = {
 };
 
 
-UIFont *UIFontCreate(const char *cPath, uint32_t size)
+UIFont *
+UIFontCreate(const char *cPath, uint32_t size)
 {
     UIFont *font = (UIFont *)UI_CALLOC(sizeof(UIFont));
 
@@ -133,7 +134,8 @@ UIFont *UIFontCreate(const char *cPath, uint32_t size)
 }
 
 
-UIFont *UIFontActivate(UIFont *font)
+UIFont *
+UIFontActivate(UIFont *font)
 {
     UIFont *previous = ui.activeFont;
     ui.activeFont    = font;
@@ -168,7 +170,14 @@ void UIEnsureGlyphRendered(UIFont *font, int c)
 #endif
 
 
-void UIDrawGlyph(UIPainter *painter, int x0, int y0, int c, uint32_t color)
+void 
+_SWDrawGlyph(
+    UIPainter *painter, 
+    int        x0, 
+    int        y0, 
+    int        c, 
+    uint32_t   color
+)
 {
 #ifdef UI_FREETYPE
     UIFont *font = ui.activeFont;
@@ -213,7 +222,7 @@ void UIDrawGlyph(UIPainter *painter, int x0, int y0, int c, uint32_t color)
                 if (x0 + x >= painter->clip.r)
                     break;
 
-                uint32_t *destination = painter->bits + (x0 + x) + (y0 + y) * painter->width;
+                uint32_t *destination = ((SWPainterCtx *)painter->ctx)->bits + (x0 + x) + (y0 + y) * ((SWPainterCtx *)painter->ctx)->width;
                 uint32_t  original    = *destination;
                 float     a;
 
@@ -268,7 +277,7 @@ void UIDrawGlyph(UIPainter *painter, int x0, int y0, int c, uint32_t color)
     const uint8_t *data = (const uint8_t *)__default_font + c * 16;
 
     for (int i = rectangle.t; i < rectangle.b; i++) {
-        uint32_t *bits = painter->bits + i * painter->width + rectangle.l;
+        uint32_t *bits = ((SWPainterCtx *)painter->ctx)->bits + i * ((SWPainterCtx *)painter->ctx)->width + rectangle.l;
         uint8_t   byte = data[i - y0];
 
         for (int j = rectangle.l; j < rectangle.r; j++) {
@@ -281,7 +290,15 @@ void UIDrawGlyph(UIPainter *painter, int x0, int y0, int c, uint32_t color)
 }
 
 
-void UIFontDestroy(UIFont *font)
+void
+UIDrawGlyph(UIPainter *painter, int x0, int y0, int c, uint32_t color)
+{
+    painter->draw_glyph(painter, x0, y0, c, color);
+}
+
+
+void 
+UIFontDestroy(UIFont *font)
 {
 #ifdef UI_FREETYPE
 # ifdef UI_UNICODE

@@ -102,7 +102,7 @@ int main() {
      Hermes_Init(&config);
 
 #ifdef UI_FREETYPE
-    UIFontActivate(UIFontCreate(FindSystemFont("Liver"), 12));
+    UIFontActivate(UIFontCreate(FindSystemFont("sans"), 11));
 #endif
 
      Hermes_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, "Widget Zoo", 800, 600);
@@ -231,7 +231,7 @@ int main() {
     // Tab 4: Code view
 
     UICode *code = UICodeCreate(&tabs->e, UI_ELEMENT_H_FILL | UI_ELEMENT_V_FILL);
-    code->font = UIFontCreate(FindSystemFont("liver mono"), 12);
+    code->font = UIFontCreate(FindSystemFont("monospace"), 11);
     UICodeInsertContent(code,
         "// libHermes widget zoo\n"
         "int main() {\n"

@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "font.h"
 #include "inspector.h"
+#include "software_painter.h"
 #include "ui_element.h"
 #include "ui_event.h"
 #include "ui_window.h"
@@ -30,7 +31,7 @@ void  Hermes_Init( Hermes_InitConfig *config)
 #endif
 
     if (config->with_inspector) {
-         Hermes_Inspector_Create();
+        Hermes_Inspector_Create();
     }
 
     return;
@@ -56,7 +57,8 @@ int  Hermes_Loop(void)
 //
 
 
-void  Hermes_UpdateUI(void)
+void  
+Hermes_UpdateUI(void)
 {
     UIWindow  *window = ui.windows;
     UIWindow **link   = &ui.windows;
@@ -78,18 +80,14 @@ void  Hermes_UpdateUI(void)
             UIElementMessage(e, UI_MSG_WINDOW_UPDATE_BEFORE_PAINT, 0, 0);
 
             if (UI_RECT_VALID(window->updateRegion)) {
-#ifdef __cplusplus
-                UIPainter painter = {};
-#else
-                UIPainter painter = {0};
-#endif
-                painter.bits   = window->bits;
-                painter.width  = window->width;
-                painter.height = window->height;
-                painter.clip   = UIRectangleIntersection(UI_RECT_2S(window->width, window->height),
-                                                         window->updateRegion);
-                 Hermes_ElementPaint(&window->e, &painter);
+                UIPainter painter = SWPainter_create(
+                        window->bits, 
+                        window->width, 
+                        window->height
+                    );
+                Hermes_ElementPaint(&window->e, &painter);
                 _UIWindowEndPaint(window, &painter);
+                UI_FREE(painter.ctx);
                 window->updateRegion = UI_RECT_1(0);
 
 #ifdef UI_DEBUG

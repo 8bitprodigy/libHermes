@@ -1,7 +1,7 @@
-#include "../platform.h"
-#include "../ui.h"
-#include "../ui_window.h"
-#include "../utils.h"
+#include "platform.h"
+#include "ui.h"
+#include "ui_window.h"
+#include "utils.h"
 #include "./x11.h"
 
 

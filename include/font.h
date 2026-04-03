@@ -46,10 +46,11 @@ typedef struct UIFont {
 } UIFont;
 
 
-UIFont *UIFontCreate(const char *cPath, uint32_t size);
-UIFont *UIFontActivate(UIFont *font);
-void    UIDrawGlyph(UIPainter *painter, int x0, int y0, int c, uint32_t color);
-void    UIFontDestroy(UIFont *font);
+UIFont *UIFontCreate(  const char *cPath,   uint32_t size);
+UIFont *UIFontActivate(UIFont     *font);
+void    UIDrawGlyph(   UIPainter  *painter, int x0, int y0, int c, uint32_t color);
+void    _SWDrawGlyph(  UIPainter  *painter, int x0, int y0, int c, uint32_t color);
+void    UIFontDestroy( UIFont     *font);
 
 
 #ifdef __cplusplus

@@ -55,24 +55,79 @@ extern "C" {
 //
 
 
-bool UIDrawLine(UIPainter *painter, int x0, int y0, int x1, int y1, uint32_t color);
-void UIDrawCircle(UIPainter *painter, int cx, int cy, int radius, uint32_t fillColor,
-                  uint32_t outlineColor, bool hollow);
-void UIDrawTriangle(UIPainter *painter, int x0, int y0, int x1, int y1, int x2, int y2,
-                    uint32_t color);
-void UIDrawTriangleOutline(UIPainter *painter, int x0, int y0, int x1, int y1, int x2, int y2,
-                           uint32_t color);
-void UIDrawBlock(UIPainter *painter, UIRectangle rectangle, uint32_t color);
-void UIDrawString(UIPainter *painter, UIRectangle r, const char *string, ptrdiff_t bytes,
-                  uint32_t color, int align, UIStringSelection *selection);
-void UIDrawBorder(UIPainter *painter, UIRectangle r, uint32_t borderColor, UIRectangle borderSize);
-void UIDrawRectangle(UIPainter *painter, UIRectangle r, uint32_t mainColor, uint32_t borderColor,
-                     UIRectangle borderSize);
-
-
-void UIDrawControlDefault(UIPainter *painter, UIRectangle bounds, uint32_t mode, const char *label,
-                          ptrdiff_t labelBytes, double position, float scale);
-
+void UIDrawLine(
+     UIPainter *painter, 
+     int        x0, 
+     int        y0, 
+     int        x1, 
+     int        y1, 
+     uint32_t   color
+);
+void UIDrawCircle(
+     UIPainter *painter, 
+     int        cx, 
+     int        cy, 
+     int        radius, 
+     uint32_t   fillColor,
+     uint32_t   outlineColor, 
+     bool       hollow
+);
+void UIDrawTriangle(
+     UIPainter *painter, 
+     int        x0, 
+     int        y0, 
+     int        x1, 
+     int        y1, 
+     int        x2, 
+     int        y2,
+     uint32_t   color
+);
+void UIDrawTriangleOutline(
+     UIPainter *painter, 
+     int        x0, 
+     int        y0, 
+     int        x1,
+     int        y1, 
+     int        x2, 
+     int        y2,
+     uint32_t   color
+);
+void UIDrawBlock(
+     UIPainter   *painter, 
+     UIRectangle  rectangle, 
+     uint32_t     color
+);
+void UIDrawString(
+     UIPainter         *painter, 
+     UIRectangle        r, 
+     const char        *string, 
+     ptrdiff_t          bytes,
+     uint32_t           color, 
+     int                align, 
+     UIStringSelection *selection
+);
+void UIDrawBorder(
+     UIPainter   *painter, 
+     UIRectangle  r, 
+     uint32_t     borderColor, 
+     UIRectangle  borderSize
+);
+void UIDrawRectangle(
+     UIPainter   *painter, 
+     UIRectangle  r, 
+     uint32_t     mainColor, 
+     uint32_t     borderColor,
+     UIRectangle  borderSize
+);
+void UIDrawControlDefault(
+     UIPainter   *painter, 
+     UIRectangle  bounds, 
+     uint32_t     mode, 
+     const char  *label,
+     ptrdiff_t    labelBytes, 
+     double       position, 
+     float        scale
+);
 void UIDrawInvert(UIPainter *painter, UIRectangle rectangle);
 
 #ifdef __cplusplus

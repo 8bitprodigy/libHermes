@@ -1,5 +1,5 @@
 CC     = gcc
-CFLAGS = -O2 -I. -DUI_LINUX
+CFLAGS = -g3 -O0 -I. -I./include -DUI_LINUX
 LIBS   = -lX11 -lm
 
 # Optional: comment out these two lines to disable FreeType

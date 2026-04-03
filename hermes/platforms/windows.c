@@ -1,12 +1,12 @@
-#include "../inspector.h"
-#include "../platform.h"
-#include "../ui.h"
-#include "../ui_animation.h"
-#include "../ui_event.h"
-#include "../ui_key.h"
-#include "../ui_menu.h"
-#include "../ui_window.h"
-#include "../utils.h"
+#include "inspector.h"
+#include "platform.h"
+#include "ui.h"
+#include "ui_animation.h"
+#include "ui_event.h"
+#include "ui_key.h"
+#include "ui_menu.h"
+#include "ui_window.h"
+#include "utils.h"
 
 
 const int UI_KEYCODE_A         = 'A';
