@@ -1,41 +1,15 @@
-# luigi
+# libHermes
 
-A barebones single-header GUI library for Win32, X11 and Essence. 
-
-## Projects made with luigi
-
-Designer, https://gitlab.com/nakst/essence/-/blob/master/util/designer2.cpp
-![Screenshot of Designer, showing a list of layers, sequences, keyframes, properties, preview settings, and a preview of a checkbox being edited.](https://raw.githubusercontent.com/nakst/cdn/main/designer.png)
-
-GDB frontend, https://github.com/nakst/gf/
-![Screenshot of the debugger's interface, showing the source view, breakpoints list, call stack and command prompt.](https://raw.githubusercontent.com/nakst/cdn/main/gf1.png)
-![Screenshot of the builtin profiler](https://raw.githubusercontent.com/nakst/cdn/main/unknown2.png)
-
-Various utility applications:
-![Screenshot of a font editor, directory size viewer, image viewer, configuration editor, and a unit converter.](https://raw.githubusercontent.com/nakst/cdn/main/utils.jpg)
-
-## Bindings for other languages
-
-- Nim: https://github.com/neroist/luigi (MIT)
-- Teak: https://github.com/nakst/teak/tree/master/modules/luigi (MIT; incomplete)
-- Rust: https://github.com/ankddev/luigi-rs (MIT)
+A lightweight GUI library for X11, based on [miEsMar's fork](https://github.com/miEsMar/luigi) of [luigi](https://github.com/nakst/luigi).
 
 ## Building the example
 
-### Windows
-
-Update `luigi_example.c` to `#define UI_WINDOWS` at the top of the file, and then run the following command in a Visual Studio command prompt:
-
-```
-cl /O2 luigi_example.c user32.lib gdi32.lib shell32.lib
-```
-
 ### Linux
 
-Update `luigi_example.c` to `#define UI_LINUX` at the top of the file, and then run the following command in Bash:
+Update `luigi_example.c` to `#define UI_LINUX` at the top of the file, and then run the following command in the root of this project directory:
 
 ```
-gcc -O2 luigi_example.c -lX11 -lm -o luigi
+make
 ```
 
 ## Linking with FreeType
@@ -388,6 +362,8 @@ UI_MSG_CODE_GET_LINE_HINT, // dp = pointer to UITableGetItem (line in index fiel
 UI_MSG_WINDOW_CLOSE, // return 1 to prevent default (process exit for UIWindow; close for UIMDIChild)
 ```
 
-## Is it lightweight and blazing fast? 🚀
+## License:
 
-No, this would require a rewrite in JavaScript, which I do not currently plan to do.
+This software is released into the public domain.
+Since there are jurisdictions in which the public domain is not legally recognized, it is also made available under the terms of the **BSD 0-Clause (0BSD)** license.
+See `LICENSE` for terms.
