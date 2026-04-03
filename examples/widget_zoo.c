@@ -1,6 +1,6 @@
 #define UI_LINUX
 #define UI_IMPLEMENTATION
-#include "../luigi.h"
+#include "../hermes.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -98,14 +98,14 @@ int SwitcherButtonMessage(UIElement *element, UIMessage message, int di, void *d
 // Main
 
 int main() {
-    Luigi_InitConfig config = { false };
-    Luigi_Init(&config);
+     Hermes_InitConfig config = { false };
+     Hermes_Init(&config);
 
 #ifdef UI_FREETYPE
-    UIFontActivate(UIFontCreate(FindSystemFont("sans"), 11));
+    UIFontActivate(UIFontCreate(FindSystemFont("Liver"), 12));
 #endif
 
-    Luigi_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, "Widget Zoo", 800, 600);
+     Hermes_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, "Widget Zoo", 800, 600);
 
     // Root panel
     UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_COLOR_1 | UI_PANEL_EXPAND | UI_PANEL_MEDIUM_SPACING);
@@ -231,15 +231,15 @@ int main() {
     // Tab 4: Code view
 
     UICode *code = UICodeCreate(&tabs->e, UI_ELEMENT_H_FILL | UI_ELEMENT_V_FILL);
-    code->font = UIFontCreate(FindSystemFont("monospace"), 11);
+    code->font = UIFontCreate(FindSystemFont("liver mono"), 12);
     UICodeInsertContent(code,
         "// libHermes widget zoo\n"
         "int main() {\n"
-        "    Luigi_InitConfig config = { false };\n"
-        "    Luigi_Init(&config);\n"
-        "    Luigi_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, \"Zoo\", 800, 600);\n"
+        "     Hermes_InitConfig config = { false };\n"
+        "     Hermes_Init(&config);\n"
+        "     Hermes_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, \"Zoo\", 800, 600);\n"
         "    // ... build your UI ...\n"
-        "    return Luigi_Loop();\n"
+        "    return  Hermes_Loop();\n"
         "}\n",
         -1, false);
 
@@ -248,5 +248,5 @@ int main() {
 
     UIParentPop(); // root panel
 
-    return Luigi_Loop();
+    return  Hermes_Loop();
 }

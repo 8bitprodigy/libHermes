@@ -1,0 +1,26 @@
+#ifndef HERMES_SPACER_H_
+#define HERMES_SPACER_H_
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+#include "ui_element.h"
+
+
+typedef struct UISpacer {
+    UIElement e;
+    int       width, height;
+} UISpacer;
+
+
+UISpacer *UISpacerCreate(UIElement *parent, uint32_t flags, int width, int height);
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // HERMES_SPACER_H_

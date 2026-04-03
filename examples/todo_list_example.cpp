@@ -1,10 +1,10 @@
 // A simple example of a "TODO" list.
 
-// Include the Luigi library.
+// Include the Hermes library.
 
 #define UI_WINDOWS
 #define UI_IMPLEMENTATION
-#include "../util/luigi.h"
+#include "../util/hermes.h"
 
 // Include standard headers.
 
@@ -147,7 +147,7 @@ int InputTextboxMessage(UIElement *element, UIMessage message, int di, void *dp)
 }
 
 int WinMain(HINSTANCE, HINSTANCE, char *, int) {
-	// Initialise Luigi and create a window.
+	// Initialise Hermes and create a window.
 	
 	UIInitialise();
 	ui.theme = _uiThemeClassic;

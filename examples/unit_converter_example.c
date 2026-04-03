@@ -1,6 +1,6 @@
 #define UI_LINUX
 #define UI_IMPLEMENTATION
-#include "luigi.h"
+#include "hermes.h"
 
 #include <stdio.h>
 
@@ -113,10 +113,10 @@ const char *FindSystemFont(const char *name) {
 }
 
 int main() {
-	Luigi_InitConfig config = {false};
-	Luigi_Init(&config);
+	Hermes_InitConfig config = {false};
+	Hermes_Init(&config);
 	UIFontActivate(UIFontCreate(FindSystemFont("sans"), 11));
-	Luigi_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, "Converter", 500, 300);
+	Hermes_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, "Converter", 500, 300);
 	UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_COLOR_1 | UI_PANEL_EXPAND | UI_PANEL_MEDIUM_SPACING);
 	UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_EXPAND | UI_PANEL_HORIZONTAL | UI_ELEMENT_V_FILL);
 	UITable *table = UITableCreate(0, UI_ELEMENT_H_FILL, "Category");
@@ -136,5 +136,5 @@ int main() {
 	UILabelCreate(0, 0, " --> ", -1);
 	output = UILabelCreate(0, UI_ELEMENT_H_FILL, 0, -1);
 	UIElementFocus(&input->e);
-	return Luigi_Loop();
+	return Hermes_Loop();
 }
