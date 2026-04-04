@@ -113,6 +113,7 @@ static int _UIInspectorTableMessage(UIElement *element, UIMessage message, int d
         }
 
         _UIWindowEndPaint(window, &painter);
+        DynamicArray_free(painter.clip_stack);
         UI_FREE(painter.ctx);
     }
 

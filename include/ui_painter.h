@@ -36,8 +36,8 @@ UIPainter
     void *(*get_native_context)(struct UIPainter *);
     
     void        *ctx;
+    UIRectangle *clip_stack;
     UIRectangle  clip;
-    UIRectangle  previous_clip
 #ifdef UI_DEBUG
     int   fillCount;
 #endif

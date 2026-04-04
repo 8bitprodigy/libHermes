@@ -13,6 +13,7 @@ extern "C" {
 
 
 #include "include/automation_tests.h"
+#include "include/dynamicarray.h"
 #include "include/font.h"
 #include "include/inspector.h"
 #include "include/timing.h"
@@ -53,6 +54,7 @@ extern "C" {
 
 #ifdef UI_IMPLEMENTATION
 
+#include "hermes/dynamicarray.c"
 #include "hermes/font.c"
 #include "hermes/inspector.c"
 #include "hermes/platform.c"

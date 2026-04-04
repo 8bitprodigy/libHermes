@@ -1,5 +1,6 @@
-#include "ui_draw.h"
+#include "dynamicarray.h"
 #include "font.h"
+#include "ui_draw.h"
 #include "ui.h"
 #include "ui_checkbox.h"
 #include "ui_string.h"
@@ -316,14 +317,19 @@ _SWDrawInvert(UIPainter *painter, UIRectangle rectangle)
 void
 _SWSetClip(UIPainter *painter, UIRectangle clip)
 {
-    painter->clip = clip;
+    DynamicArray_add(painter->clip_stack, &painter->clip);
+    painter->clip = UIRectangleIntersection(painter->clip, clip);
 }
 
 
 void
 _SWRestoreClip(UIPainter *painter)
 {
-    painter->clip = painter->previous_clip;
+    size_t len = DynamicArray_length(painter->clip_stack);
+    if (0 < len) {
+        painter->clip = painter->clip_stack[len - 1];
+        DynamicArray_delete(painter->clip_stack, len - 1, 1);
+    }
 }
 
 
@@ -336,6 +342,7 @@ SWPainter_create(uint32_t *bits, int width, int height)
     ctx->height = height;
     
     UIPainter p = {0};
+    p.clip_stack    = DynamicArray(UIRectangle, 8);
     p.draw_block    = _SWDrawBlock;
     p.draw_image    = _SWDrawImage;
     p.draw_line     = _SWDrawLine;

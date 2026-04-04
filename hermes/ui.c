@@ -87,6 +87,7 @@ Hermes_UpdateUI(void)
                     );
                 Hermes_ElementPaint(&window->e, &painter);
                 _UIWindowEndPaint(window, &painter);
+                DynamicArray_free(painter.clip_stack);
                 UI_FREE(painter.ctx);
                 window->updateRegion = UI_RECT_1(0);
 
