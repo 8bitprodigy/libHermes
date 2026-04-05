@@ -2,6 +2,8 @@
 
 A lightweight GUI library for X11, based on [miEsMar's fork](https://github.com/miEsMar/luigi) of [luigi](https://github.com/nakst/luigi).
 
+![](img/widget_zoo.png)
+
 ## Building the example
 
 ### Linux

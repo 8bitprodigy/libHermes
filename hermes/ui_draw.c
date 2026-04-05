@@ -366,15 +366,15 @@ UIDrawControlDefault(
             /* Background of radio control */
             UIDrawTriangle(
                     painter, 
-                    boxBounds.l, rad_mid_Y, 
-                    rad_mid_X,   boxBounds.t, 
+                    boxBounds.l,     rad_mid_Y, 
+                    rad_mid_X, boxBounds.t, 
                     boxBounds.r, rad_mid_Y, 
                     color
                 );
             UIDrawTriangle(
                     painter, 
-                    boxBounds.r, rad_mid_Y, 
-                    rad_mid_X,   boxBounds.b, 
+                    boxBounds.r,     rad_mid_Y, 
+                    rad_mid_X, boxBounds.b, 
                     boxBounds.l, rad_mid_Y, 
                     color
                 );
@@ -382,30 +382,30 @@ UIDrawControlDefault(
             /* Border of radio control */
             UIDrawLine(
                     painter, 
-                    boxBounds.l, rad_mid_Y,
+                    boxBounds.l, rad_mid_Y, 
                     rad_mid_X,   boxBounds.t,
                     highlight
                 );
             UIDrawLine(
                     painter, 
-                    rad_mid_X,   boxBounds.t, 
-                    boxBounds.r, rad_mid_Y, 
+                    rad_mid_X   + 1,   boxBounds.t + 1, 
+                    boxBounds.r + 1, rad_mid_Y     + 1, 
                     ambient
                 );
             UIDrawLine(
                     painter, 
-                    boxBounds.r, rad_mid_Y, 
-                    rad_mid_X,   boxBounds.b, 
+                    boxBounds.r - 1, rad_mid_Y     + 1, 
+                    rad_mid_X   - 1,   boxBounds.b + 1, 
                     shadow
                 );
             UIDrawLine(
                     painter, 
-                    rad_mid_X,   boxBounds.b, 
+                    rad_mid_X, boxBounds.b, 
                     boxBounds.l, rad_mid_Y, 
                     ambient
                 );
             
-            UIDrawString(painter, UIRectangleAdd(boxBounds, UI_RECT_4(1, 0, 0, 0)),
+            UIDrawString(painter, UIRectangleAdd(boxBounds, UI_RECT_4(1, 0, 2, 0)),
                         checked ? 
                             "\u2022"
                             : " ",
