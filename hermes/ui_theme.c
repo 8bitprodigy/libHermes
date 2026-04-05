@@ -43,7 +43,7 @@ UITheme uiThemeClassic = {
 
 UITheme uiThemeDark = {
     .panel1   = 0xFF555555,
-    .panel2   = 0xFF14181E,
+    .panel2   = 0xFF444444,
     .selected = 0xFF94BEFE,
     .border   = 0xFF000000,
 
@@ -53,7 +53,7 @@ UITheme uiThemeDark = {
 
     .buttonNormal   = 0xFF555555,
     .buttonHovered  = 0xFF4B5874,
-    .buttonPressed  = 0xFF0D0D0F,
+    .buttonPressed  = 0xFF444444,
     .buttonDisabled = 0xFF1B1F23,
 
     .textboxNormal  = 0xFF31353C,

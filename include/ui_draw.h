@@ -36,6 +36,7 @@ extern "C" {
 #define UI_DRAW_CONTROL_MDI_CHILD           (20)
 #define UI_DRAW_CONTROL_TAB                 (21)
 #define UI_DRAW_CONTROL_TAB_BAND            (22)
+#define UI_DRAW_CONTROL_RADIOBUTTON         (23)
 #define UI_DRAW_CONTROL_TYPE_MASK           (0xFF)
 #define UI_DRAW_CONTROL_STATE_SELECTED      (1 << 24)
 #define UI_DRAW_CONTROL_STATE_VERTICAL      (1 << 25)
@@ -52,7 +53,12 @@ extern "C" {
      (((x)->window->pressed == (x)) ? UI_DRAW_CONTROL_STATE_PRESSED : 0))
 
 
-//
+typedef enum
+{
+     BORDER_RAISED,
+     BORDER_LOWERED,
+}
+BorderType;
 
 
 void UIDrawLine(
@@ -109,15 +115,17 @@ void UIDrawString(
 void UIDrawBorder(
      UIPainter   *painter, 
      UIRectangle  r, 
-     uint32_t     borderColor, 
-     UIRectangle  borderSize
+     uint32_t     border_color, 
+     UIRectangle  border_size,
+     BorderType   border_type
 );
 void UIDrawRectangle(
      UIPainter   *painter, 
      UIRectangle  r, 
      uint32_t     mainColor, 
      uint32_t     borderColor,
-     UIRectangle  borderSize
+     UIRectangle  borderSize,
+     BorderType   border_type
 );
 void UIDrawControlDefault(
      UIPainter   *painter, 

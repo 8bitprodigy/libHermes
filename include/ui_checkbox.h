@@ -27,11 +27,12 @@ typedef struct UICheckbox {
 } UICheckbox;
 
 
-//
-
-
-UICheckbox *UICheckboxCreate(UIElement *parent, uint32_t flags, const char *label,
-                             ptrdiff_t labelBytes);
+UICheckbox *UICheckboxCreate(
+    UIElement  *parent, 
+    uint32_t    flags, 
+    const char *label,
+    ptrdiff_t   labelBytes
+);
 
 
 #ifdef __cplusplus

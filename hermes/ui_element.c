@@ -405,8 +405,13 @@ void Hermes_ElementPaint(UIElement *element, UIPainter *painter)
     painter->clip = previousClip;
     UIElementMessage(element, UI_MSG_PAINT_FOREGROUND, 0, painter);
     if (element->flags & UI_ELEMENT_BORDER) {
-        UIDrawBorder(painter, element->bounds, ui.theme.border,
-                     UI_RECT_1((int)element->window->scale));
+        UIDrawBorder(
+                painter, 
+                element->bounds,
+                ui.theme.border,
+                UI_RECT_1((int)element->window->scale),
+                BORDER_RAISED
+            );
     }
 
     return;

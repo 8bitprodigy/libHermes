@@ -3,7 +3,7 @@ CFLAGS = -g3 -O0 -I. -I./include -DUI_LINUX
 LIBS   = -lX11 -lm
 
 # Optional: comment out these two lines to disable FreeType
-CFLAGS += -DUI_FREETYPE $(shell pkg-config --cflags freetype2)
+CFLAGS += -DUI_FREETYPE -DUI_UNICODE $(shell pkg-config --cflags freetype2)
 LIBS   += $(shell pkg-config --libs freetype2)
 
 EXAMPLES = \

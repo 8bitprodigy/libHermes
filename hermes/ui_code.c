@@ -63,7 +63,14 @@ static int _UICodeMessage(UIElement *element, UIMessage message, int di, void *d
         int lineHeight = UIMeasureStringHeight();
         lineBounds.t -= (int64_t)code->vScroll->position % lineHeight;
 
-        UIDrawBlock(painter, element->bounds, ui.theme.codeBackground);
+        UIDrawRectangle(
+            painter, 
+            element->bounds, 
+            ui.theme.codeBackground,
+            0,
+            UI_RECT_1(1),
+            BORDER_LOWERED
+        );
 
 #ifdef __cplusplus
         UIStringSelection selection = {};

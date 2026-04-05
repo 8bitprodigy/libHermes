@@ -11,14 +11,15 @@ extern "C" {
 
 
 typedef struct UIPanel {
-#define UI_PANEL_HORIZONTAL     (1 << 0)
-#define UI_PANEL_COLOR_1        (1 << 2)
-#define UI_PANEL_COLOR_2        (1 << 3)
-#define UI_PANEL_SMALL_SPACING  (1 << 5)
-#define UI_PANEL_MEDIUM_SPACING (1 << 6)
-#define UI_PANEL_LARGE_SPACING  (1 << 7)
-#define UI_PANEL_SCROLL         (1 << 8)
-#define UI_PANEL_EXPAND         (1 << 9)
+#define UI_PANEL_HORIZONTAL     (1 <<  0)
+#define UI_PANEL_COLOR_1        (1 <<  2)
+#define UI_PANEL_COLOR_2        (1 <<  3)
+#define UI_PANEL_SMALL_SPACING  (1 <<  5)
+#define UI_PANEL_MEDIUM_SPACING (1 <<  6)
+#define UI_PANEL_LARGE_SPACING  (1 <<  7)
+#define UI_PANEL_SCROLL         (1 <<  8)
+#define UI_PANEL_EXPAND         (1 <<  9)
+#define UI_PANEL_LOWERERED      (1 << 10)
     UIElement           e;
     struct UIScrollBar *scrollBar;
     UIRectangle         border;

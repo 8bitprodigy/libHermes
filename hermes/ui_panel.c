@@ -46,7 +46,7 @@ static int _UIPanelMessage(UIElement *element, UIMessage message, int di, void *
         if (element->flags & UI_PANEL_COLOR_1) {
             UIDrawBlock((UIPainter *)dp, element->bounds, ui.theme.panel1);
         } else if (element->flags & UI_PANEL_COLOR_2) {
-            UIDrawBlock((UIPainter *)dp, element->bounds, ui.theme.panel2);
+            UIDrawRectangle((UIPainter *)dp, element->bounds, ui.theme.panel2, 0, UI_RECT_1(1), BORDER_LOWERED);
         }
     } else if (message == UI_MSG_MOUSE_WHEEL && panel->scrollBar) {
         return UIElementMessage(&panel->scrollBar->e, message, di, dp);

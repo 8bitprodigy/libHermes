@@ -61,6 +61,17 @@ void CheckboxInvoke(void *cp) {
 }
 
 
+// Radio button
+ 
+static UILabel *radioLabel;
+ 
+void RadioGroupInvoke(void *cp, int selected) {
+    const char *options[] = { "Option 1", "Option 2", "Option 3" };
+    UILabelSetContent(radioLabel, options[selected], -1);
+    UIElementRepaint(&radioLabel->e, NULL);
+}
+
+
 // Button counter
 
 static UILabel *counterLabel;
@@ -97,18 +108,20 @@ int SwitcherButtonMessage(UIElement *element, UIMessage message, int di, void *d
 
 // Main
 
-int main() {
+int 
+main() 
+{
      Hermes_InitConfig config = { false };
      Hermes_Init(&config);
 
 #ifdef UI_FREETYPE
-    UIFontActivate(UIFontCreate(FindSystemFont("sans"), 11));
+    UIFontActivate(UIFontCreate(FindSystemFont("DejaVu sans"), 11));
 #endif
 
      Hermes_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, "Widget Zoo", 800, 600);
 
     // Root panel
-    UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_COLOR_1 | UI_PANEL_EXPAND | UI_PANEL_MEDIUM_SPACING);
+    UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_COLOR_1 | UI_PANEL_EXPAND);
 
     // Tab pane with all sections
     UITabPane *tabs = UITabPaneCreate(0, UI_ELEMENT_H_FILL | UI_ELEMENT_V_FILL,
@@ -117,7 +130,7 @@ int main() {
 
     // Tab 0: Basic Controls
 
-    UIPanelCreate(&tabs->e, UI_ELEMENT_PARENT_PUSH | UI_PANEL_EXPAND | UI_PANEL_MEDIUM_SPACING | UI_PANEL_SCROLL);
+    UIPanelCreate(&tabs->e, UI_ELEMENT_PARENT_PUSH | UI_PANEL_EXPAND | UI_PANEL_LARGE_SPACING | UI_PANEL_SCROLL);
 
         // Button row
         UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_HORIZONTAL | UI_PANEL_MEDIUM_SPACING);
@@ -139,6 +152,16 @@ int main() {
         cb2->e.cp   = cb2;
         cb3->e.cp   = cb3;
 
+        UISpacerCreate(0, 0, 0, 8);
+
+        // Radio buttons
+        UILabelCreate(0, 0, "Radio Buttons:", -1);
+        UIRadioGroup *radioGroup = UIRadioGroup_create(0, 0, RadioGroupInvoke, NULL);
+        UIRadioButton_create(radioGroup, 0, "Option 1", -1, NULL, NULL);
+        UIRadioButton_create(radioGroup, 0, "Option 2", -1, NULL, NULL);
+        UIRadioButton_create(radioGroup, 0, "Option 3", -1, NULL, NULL);
+        radioLabel = UILabelCreate(0, 0, "None selected", -1);
+ 
         UISpacerCreate(0, 0, 0, 8);
 
         // Textbox
@@ -232,16 +255,19 @@ int main() {
 
     UICode *code = UICodeCreate(&tabs->e, UI_ELEMENT_H_FILL | UI_ELEMENT_V_FILL);
     code->font = UIFontCreate(FindSystemFont("monospace"), 11);
-    UICodeInsertContent(code,
-        "// libHermes widget zoo\n"
-        "int main() {\n"
-        "     Hermes_InitConfig config = { false };\n"
-        "     Hermes_Init(&config);\n"
-        "     Hermes_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, \"Zoo\", 800, 600);\n"
-        "    // ... build your UI ...\n"
-        "    return  Hermes_Loop();\n"
-        "}\n",
-        -1, false);
+    UICodeInsertContent(
+            code,
+            "// libHermes widget zoo\n"
+            "int main() {\n"
+            "     Hermes_InitConfig config = { false };\n"
+            "     Hermes_Init(&config);\n"
+            "     Hermes_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, \"Zoo\", 800, 600);\n"
+            "    // ... build your UI ...\n"
+            "    return  Hermes_Loop();\n"
+            "}\n",
+            -1, 
+            false
+        );
 
 
     // Done
