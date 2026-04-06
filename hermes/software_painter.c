@@ -317,7 +317,8 @@ _SWDrawInvert(UIPainter *painter, UIRectangle rectangle)
 void
 _SWSetClip(UIPainter *painter, UIRectangle clip)
 {
-    DynamicArray_add(painter->clip_stack, &painter->clip);
+    void **clip_stack_ptr = (void **)&painter->clip_stack;
+    DynamicArray_append(clip_stack_ptr, &painter->clip, 1);
     painter->clip = UIRectangleIntersection(painter->clip, clip);
 }
 

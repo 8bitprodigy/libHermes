@@ -2,7 +2,6 @@
 
 // Include the Hermes library.
 
-#define UI_WINDOWS
 #define UI_IMPLEMENTATION
 #include "../util/hermes.h"
 

@@ -10,63 +10,7 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
-
-#if defined(UI_LINUX) || defined(UI_COCOA)
-# include <assert.h>
-# include <math.h>
-# include <stdlib.h>
-# include <string.h>
-
-# define UI_ASSERT    assert
-# define UI_CALLOC(x) calloc(1, (x))
-# define UI_FREE      free
-# define UI_MALLOC    malloc
-# define UI_REALLOC   realloc
-# define UI_MEMMOVE(d, s, n)                                                                       \
-     do {                                                                                          \
-         size_t _n = n;                                                                            \
-         if (_n) {                                                                                 \
-             memmove(d, s, _n);                                                                    \
-         }                                                                                         \
-     } while (0)
-#endif
-
-#ifdef UI_WINDOWS
-# undef _UNICODE
-# undef UNICODE
-# include <windows.h>
-
-extern HANDLE win_heap;
-
-# define UI_ASSERT(x)                                                                              \
-     do {                                                                                          \
-         if (!(x)) {                                                                               \
-             ui.platform->assertionFailure = true;                                                 \
-             MessageBox(0, "Assertion failure on line " _UI_TO_STRING_2(__LINE__), 0, 0);          \
-             ExitProcess(1);                                                                       \
-         }                                                                                         \
-     } while (0)
-# define UI_CALLOC(x) HeapAlloc(win_heap, HEAP_ZERO_MEMORY, (x))
-# define UI_FREE(x)   HeapFree(win_heap, 0, (x))
-# define UI_MALLOC(x) HeapAlloc(win_heap, 0, (x))
-# define UI_REALLOC   _UIHeapReAlloc
-# define UI_MEMMOVE   _UIMemmove
-#endif
-
-#if defined(UI_ESSENCE)
-# include <essence.h>
-
-# define UI_ASSERT        EsAssert
-# define UI_CALLOC(x)     EsHeapAllocate((x), true)
-# define UI_FREE          EsHeapFree
-# define UI_MALLOC(x)     EsHeapAllocate((x), false)
-# define UI_REALLOC(x, y) EsHeapReallocate((x), (y), false)
-# define UI_MEMMOVE       EsCRTmemmove
-
-// Callback to allow the application to process messages.
-void _UIMessageProcess(EsMessage *message);
-#endif
+#include <math.h>
 
 
 #define _UI_TO_STRING_1(x) #x

@@ -420,9 +420,20 @@ UIDrawControlDefault(
     case UI_DRAW_CONTROL_MENU_ITEM:    /* FALLTHROUGH */
     case UI_DRAW_CONTROL_DROP_DOWN:    /* FALLTHROUGH */
     case UI_DRAW_CONTROL_PUSH_BUTTON: {
-            uint32_t color = buttonColor, textColor = buttonTextColor;
-            int      borderSize = which == UI_DRAW_CONTROL_MENU_ITEM ? 0 : scale;
-            UIDrawRectangle(painter, bounds, color, ui.theme.border, UI_RECT_1(borderSize), pressed ? BORDER_LOWERED : BORDER_RAISED);
+            uint32_t 
+                color     = buttonColor, 
+                textColor = buttonTextColor;
+            int borderSize = which == UI_DRAW_CONTROL_MENU_ITEM ? 0 : scale;
+            UIDrawRectangle(
+                    painter, 
+                    bounds, 
+                    color, 
+                    ui.theme.border, 
+                    UI_RECT_1(borderSize), 
+                    pressed ? 
+                        BORDER_LOWERED 
+                        : BORDER_RAISED
+                );
 
             if (checked && !focused) {
                 UIDrawBlock(
@@ -462,7 +473,7 @@ UIDrawControlDefault(
         break;
     case UI_DRAW_CONTROL_SPLITTER: {
             UIRectangle borders =
-                (mode & UI_DRAW_CONTROL_STATE_VERTICAL) ? UI_RECT_2(0, 1) : UI_RECT_2(1, 0);
+                (mode & UI_DRAW_CONTROL_STATE_VERTICAL) ? UI_RECT_2(1, 1) : UI_RECT_2(1, 1);
             UIDrawRectangle(painter, bounds, ui.theme.buttonNormal, ui.theme.border, borders, BORDER_RAISED);
             break;
         }

@@ -1,4 +1,3 @@
-#define UI_LINUX
 #define UI_IMPLEMENTATION
 #include "../hermes.h"
 
@@ -111,14 +110,17 @@ int SwitcherButtonMessage(UIElement *element, UIMessage message, int di, void *d
 int 
 main() 
 {
-     Hermes_InitConfig config = { false };
-     Hermes_Init(&config);
+    char title[64];
+    
+    Hermes_InitConfig config = { false };
+    Hermes_Init(&config);
 
 #ifdef UI_FREETYPE
     UIFontActivate(UIFontCreate(FindSystemFont("DejaVu sans"), 11));
 #endif
 
-     Hermes_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, "Widget Zoo", 800, 600);
+    snprintf(title, sizeof(title), "Widget Zoo (%s)", Hermes_GetBackendName());
+    Hermes_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, title, 800, 600);
 
     // Root panel
     UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_COLOR_1 | UI_PANEL_EXPAND);
@@ -141,29 +143,34 @@ main()
 
         UISpacerCreate(0, 0, 0, 8);
 
-        // Checkboxes
-        UILabelCreate(0, 0, "Checkboxes:", -1);
-        UICheckbox *cb1 = UICheckboxCreate(0, 0, "Option A", -1);
-        UICheckbox *cb2 = UICheckboxCreate(0, 0, "Option B", -1);
-        UICheckbox *cb3 = UICheckboxCreate(0, UI_CHECKBOX_ALLOW_INDETERMINATE, "Option C (indeterminate allowed)", -1);
-        checkLabel = UILabelCreate(0, 0, "Unchecked", -1);
-        cb1->invoke = cb2->invoke = cb3->invoke = CheckboxInvoke;
-        cb1->e.cp   = cb1;
-        cb2->e.cp   = cb2;
-        cb3->e.cp   = cb3;
+        UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_HORIZONTAL | UI_PANEL_EXPAND);
+            UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_EXPAND);
+                // Checkboxes
+                UILabelCreate(0, 0, "Checkboxes:", -1);
+                UICheckbox *cb1 = UICheckboxCreate(0, 0, "Option A", -1);
+                UICheckbox *cb2 = UICheckboxCreate(0, 0, "Option B", -1);
+                UICheckbox *cb3 = UICheckboxCreate(0, UI_CHECKBOX_ALLOW_INDETERMINATE, "Option C (indeterminate allowed)", -1);
+                checkLabel = UILabelCreate(0, 0, "Unchecked", -1);
+                cb1->invoke = cb2->invoke = cb3->invoke = CheckboxInvoke;
+                cb1->e.cp   = cb1;
+                cb2->e.cp   = cb2;
+                cb3->e.cp   = cb3;
 
-        UISpacerCreate(0, 0, 0, 8);
-
-        // Radio buttons
-        UILabelCreate(0, 0, "Radio Buttons:", -1);
-        UIRadioGroup *radioGroup = UIRadioGroup_create(0, 0, RadioGroupInvoke, NULL);
-        UIRadioButton_create(radioGroup, 0, "Option 1", -1, NULL, NULL);
-        UIRadioButton_create(radioGroup, 0, "Option 2", -1, NULL, NULL);
-        UIRadioButton_create(radioGroup, 0, "Option 3", -1, NULL, NULL);
-        radioLabel = UILabelCreate(0, 0, "None selected", -1);
- 
-        UISpacerCreate(0, 0, 0, 8);
-
+                UISpacerCreate(0, 0, 0, 8);
+            UIParentPop();
+            UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_EXPAND);
+                // Radio buttons
+                UILabelCreate(0, 0, "Radio Buttons:", -1);
+                UIRadioGroup *radioGroup = UIRadioGroup_create(0, 0, RadioGroupInvoke, NULL);
+                UIRadioButton_create(radioGroup, 0, "Option 1", -1, NULL, NULL);
+                UIRadioButton_create(radioGroup, 0, "Option 2", -1, NULL, NULL);
+                UIRadioButton_create(radioGroup, 0, "Option 3", -1, NULL, NULL);
+                radioLabel = UILabelCreate(0, 0, "None selected", -1);
+        
+                UISpacerCreate(0, 0, 0, 8);
+            UIParentPop();
+        UIParentPop();
+                
         // Textbox
         UILabelCreate(0, 0, "Textbox:", -1);
         UITextboxCreate(0, UI_ELEMENT_H_FILL);
@@ -192,8 +199,8 @@ main()
 
     // Tab 2: Split & Wrap
 
-    UISplitPane *split = UISplitPaneCreate(&tabs->e, UI_ELEMENT_H_FILL | UI_ELEMENT_V_FILL, 0.4f);
-
+    UISplitPane *split = UISplitPaneCreate(&tabs->e, UI_ELEMENT_H_FILL | UI_ELEMENT_V_FILL | UI_PANEL_LARGE_SPACING, 0.4f);
+        
         UIPanelCreate(&split->e, UI_ELEMENT_PARENT_PUSH | UI_PANEL_COLOR_2 | UI_PANEL_EXPAND | UI_PANEL_MEDIUM_SPACING);
             UILabelCreate(0, 0, "Left pane (40%)", -1);
             UIButtonCreate(0, UI_ELEMENT_H_FILL, "Button A", -1);

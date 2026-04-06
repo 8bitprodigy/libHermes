@@ -7,34 +7,16 @@ extern "C" {
 #endif
 
 
-#if defined(UI_LINUX) || defined(UI_COCOA)
-# include <time.h>
+#include "platform.h"
 
-# define UI_CLOCK             _UIClock
-# define UI_CLOCKS_PER_SECOND 1000
-# define UI_CLOCK_T           clock_t
-
-static inline UI_CLOCK_T _UIClock(void)
-{
-    struct timespec spec;
-    clock_gettime(CLOCK_REALTIME, &spec);
-    return spec.tv_sec * 1000 + spec.tv_nsec / 1000000;
-}
-#endif
-#ifdef UI_WINDOWS
-# include <windows.h>
-
-# define UI_CLOCK             GetTickCount
-# define UI_CLOCKS_PER_SECOND (1000)
-# define UI_CLOCK_T           DWORD
-#endif
-#if defined(UI_ESSENCE)
-# include <essence.h>
-
-# define UI_CLOCK             EsTimeStampMs
-# define UI_CLOCKS_PER_SECOND 1000
-# define UI_CLOCK_T           uint64_t
-#endif
+/*
+    Clock definitions (UI_CLOCK, UI_CLOCK_T, UI_CLOCKS_PER_SECOND) are defined
+    in each platform header:
+        platforms/x11.h     -- UI_LINUX
+        platforms/windows.h -- UI_WINDOWS
+        platforms/sdl3.h    -- UI_SDL3
+        platforms/cocoa.h   -- UI_COCOA
+*/
 
 
 #ifdef __cplusplus

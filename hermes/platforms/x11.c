@@ -60,6 +60,12 @@ void Hermes_Platform_get_screen_pos(Hermes_PlatformWindow *pwindow, int *_x, int
 }
 
 
+const char *
+Hermes_GetBackendName(void) 
+{
+    return "X11";
+}
+
 //
 
 
@@ -232,6 +238,17 @@ void _UIWindowSetCursor(UIWindow *window, int cursor)
     const Hermes_Platform_X11 *platform = ui.platform;
 
     XDefineCursor(platform->display, window->window.window, platform->cursors[cursor]);
+}
+
+
+void Hermes_Platform_SetCursor(UICursorKind cursor)
+{
+    Hermes_Platform_X11 *platform = (Hermes_Platform_X11 *)ui.platform;
+    UIWindow            *window   = ui.windows;
+    while (window) {
+        XDefineCursor(platform->display, window->window.window, platform->cursors[cursor]);
+        window = window->next;
+    }
 }
 
 
