@@ -71,6 +71,7 @@ typedef struct UIWindow {
     int  pressedButton;
     bool ctrl, shift, alt;
 
+    uint32_t think_count; // number of elements that want UI_MSG_THINK
 
     // Set when a textbox is modified.
     // Useful for tracking whether changes to the loaded document have been saved.

@@ -29,6 +29,7 @@ typedef enum UIMessage UIMessage;
     (1 << 21) // Don't destroy in UIElementDestroyDescendents, like scroll bars.
 #define UI_ELEMENT_DISABLED (1 << 22) // Don't receive input events.
 #define UI_ELEMENT_BORDER   (1 << 23)
+#define UI_ELEMENT_THINK    (1 << 24) // Wants UI_MSG_THINK each frame
 
 #define UI_ELEMENT_HIDE                (1 << 27)
 #define UI_ELEMENT_RELAYOUT            (1 << 28)
@@ -101,6 +102,8 @@ bool Hermes_ElementDestroy(UIElement *element);
 
 UIElement *_UIElementNextOrPreviousSibling(UIElement *element, bool previous);
 void       _UIElementDestroyDescendents(UIElement *element, bool topLevel);
+
+void UIElement_setThink(UIElement *element, bool enable);
 
 
 #ifdef __cplusplus

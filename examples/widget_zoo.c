@@ -120,14 +120,17 @@ main()
 #endif
 
     snprintf(title, sizeof(title), "Widget Zoo (%s)", Hermes_GetBackendName());
-    Hermes_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, title, 800, 600);
+    Hermes_CreateWindow(0, UI_ELEMENT_PARENT_PUSH, title, 800, 450);
 
     // Root panel
     UIPanelCreate(0, UI_ELEMENT_PARENT_PUSH | UI_PANEL_COLOR_1 | UI_PANEL_EXPAND);
 
     // Tab pane with all sections
-    UITabPane *tabs = UITabPaneCreate(0, UI_ELEMENT_H_FILL | UI_ELEMENT_V_FILL,
-                                      "Basic Controls\tTable\tSplit & Wrap\tSwitcher\tCode");
+    UITabPane *tabs = UITabPaneCreate(
+            0, 
+            UI_ELEMENT_H_FILL | UI_ELEMENT_V_FILL,
+            "Basic Controls\tTable\tSplit & Wrap\tSwitcher\tCode"
+        );
 
 
     // Tab 0: Basic Controls

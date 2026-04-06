@@ -460,3 +460,20 @@ bool Hermes_ElementDestroy(UIElement *element)
 
     return false;
 }
+
+
+void
+UIElement_setThink(UIElement *element, bool enable)
+{
+    bool currently = (element->flags & UI_ELEMENT_THINK) != 0;
+    if (currently == enable) return;
+
+    if (enable) {
+        element->flags |= UI_ELEMENT_THINK;
+        element->window->think_count++;
+    }
+    else {
+        element->flags &= ~UI_ELEMENT_THINK;
+        element->window->think_count--;
+    }
+}

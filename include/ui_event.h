@@ -26,6 +26,7 @@ typedef enum UIMessage {
     UI_MSG_DEALLOCATE,
     UI_MSG_UPDATE, // di = UI_UPDATE_... constant
     UI_MSG_ANIMATE,
+    UI_MSG_THINK, // called every frame before paint; element must opt in
     UI_MSG_SCROLLED,
     UI_MSG_GET_WIDTH,           // di = height (if known); return width
     UI_MSG_GET_HEIGHT,          // di = width (if known); return height

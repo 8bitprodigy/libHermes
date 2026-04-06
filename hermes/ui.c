@@ -54,7 +54,17 @@ int  Hermes_Loop(void)
 }
 
 
-//
+static void
+_UIBroadcastThink(UIElement *element)
+{
+    if (element->flags & (UI_ELEMENT_HIDE | UI_ELEMENT_DESTROY)) return;
+
+    if (element->flags & UI_ELEMENT_THINK)
+        UIElementMessage(element, UI_MSG_THINK, 0, 0);
+
+    for (uint32_t i = 0; i < element->childCount; i++)
+        _UIBroadcastThink(element->children[i]);
+}
 
 
 void  
@@ -76,6 +86,11 @@ Hermes_UpdateUI(void)
             link = &window->next;
 
             UIElementMessage(e, UI_MSG_WINDOW_UPDATE_BEFORE_LAYOUT, 0, 0);
+
+            // Broadcast think to any subscribed elements
+            if (0 < window->think_count) 
+                _UIBroadcastThink(&window->e);
+            
             UIElementMove(e, window->e.bounds, false);
             UIElementMessage(e, UI_MSG_WINDOW_UPDATE_BEFORE_PAINT, 0, 0);
 

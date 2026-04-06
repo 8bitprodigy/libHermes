@@ -56,15 +56,6 @@ _SDLResizeFramebuffer(UIWindow *window, int width, int height)
     window->bits   = (uint32_t *)UI_MALLOC(width * height * 4);
     window->width  = width;
     window->height = height;
-
-    if (window->window.sdl_surface) {
-        SDL_DestroySurface(window->window.sdl_surface);
-    }
-
-    window->window.sdl_surface = SDL_CreateSurfaceFrom(
-        width, height, SDL_PIXELFORMAT_XRGB8888,
-        window->bits, width * 4
-    );
 }
 
 
@@ -167,19 +158,21 @@ void Hermes_Platform_render(UIWindow *window, UIPainter *painter)
     SDL_Surface *screen = SDL_GetWindowSurface(window->window.sdl_window);
     if (!screen) return;
     
-    // Recreate source surface if size changed
-    if (!window->window.sdl_surface ||
-        window->window.sdl_surface->w != window->width ||
-        window->window.sdl_surface->h != window->height) {
-        if (window->window.sdl_surface)
-            SDL_DestroySurface(window->window.sdl_surface);
-        window->window.sdl_surface = SDL_CreateSurfaceFrom(
-            window->width, window->height,
+    /*  Always rebuild so sld-surface->pixels tracks window->bits, which can 
+        move on every resize realloc.
+    */
+    if (window->window.sdl_surface) 
+        SDL_DestroySurface(window->window.sdl_surface);
+        
+    window->window.sdl_surface = SDL_CreateSurfaceFrom(
+            window->width,
+            window->height,
             SDL_PIXELFORMAT_XRGB8888,
             window->bits,
             window->width * 4
         );
-    }
+        
+    if (!window->window.sdl_surface) return;
     
     SDL_BlitSurface(window->window.sdl_surface, NULL, screen, NULL);
     SDL_UpdateWindowSurface(window->window.sdl_window);

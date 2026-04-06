@@ -547,7 +547,7 @@ UIDrawControlDefault(
         } else {
             filled.r = filled.l + UI_RECT_WIDTH(filled) * position;
         }
-        UIDrawRectangle(painter, filled, ui.theme.selected, 0, UI_RECT_1(1), BORDER_RAISED);
+        UIDrawRectangle(painter, filled, ui.theme.buttonHovered, 0, UI_RECT_1(1), BORDER_RAISED);
         break;
     case UI_DRAW_CONTROL_SLIDER: {
             bool vertical     = mode & UI_DRAW_CONTROL_STATE_VERTICAL;

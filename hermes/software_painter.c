@@ -352,6 +352,7 @@ SWPainter_create(uint32_t *bits, int width, int height)
     p.draw_glyph    = _SWDrawGlyph;
     p.draw_invert   = _SWDrawInvert;
     p.set_clip      = _SWSetClip;
+    p.restore_clip  = _SWRestoreClip;
     p.clip          = UI_RECT_4(0, width, 0, height);
     p.ctx           = ctx;
 
