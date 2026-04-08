@@ -92,6 +92,12 @@ Hermes_Platform_CreateWindow(
     int         _height
 )
 {
+#ifdef UI_GPU
+    SDL_Log("UI_GPU is defined");
+#else
+    SDL_Log("UI_GPU is NOT defined");
+#endif
+
     _UIMenusClose();
 
     int width  = (flags & UI_WINDOW_MENU) ? 1 : _width  ? _width  : 800;
@@ -110,9 +116,17 @@ Hermes_Platform_CreateWindow(
     window->window.sdl_window = SDL_CreateWindow(
         cTitle ? cTitle : "", width, height, sdl_flags
     );
-
+    
     if (!window->window.sdl_window) return;
 
+#ifdef UI_GPU
+    window->gpu = SDL3GPUContext_create(window->window.sdl_window);
+    if (!window->gpu) {
+        // handle error - SDL3GPUContext_create already called SDL_CreateRenderer internally
+        SDL_Log("Failed to create GPU context: %s", SDL_GetError());
+    }
+#endif
+    
     if (flags & UI_WINDOW_CENTER_IN_OWNER && window->owner) {
         int ox, oy;
         Hermes_Platform_get_screen_pos(&window->owner->window, &ox, &oy);

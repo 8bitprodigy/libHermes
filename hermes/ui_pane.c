@@ -130,12 +130,18 @@ static int _UITabPaneMessage(UIElement *element, UIMessage message, int di, void
                 ;
 
             int width = UIMeasureStringWidth(tabPane->tabs, end - position);
-            tab.r     = tab.l + width + UI_SIZE_BUTTON_PADDING;
+            tab.r     = tab.l + width + UI_SIZE_TAB_SPACING + UI_SIZE_BUTTON_PADDING;
 
-            UIDrawControl(painter, tab,
-                          UI_DRAW_CONTROL_TAB |
-                              (tabPane->active == index ? UI_DRAW_CONTROL_STATE_SELECTED : 0),
-                          tabPane->tabs + position, end - position, 0, element->window->scale);
+            UIDrawControl(
+                    painter, 
+                    tab,
+                    UI_DRAW_CONTROL_TAB |
+                        (tabPane->active == index ? UI_DRAW_CONTROL_STATE_SELECTED : 0),
+                    tabPane->tabs + position, 
+                    end - position, 
+                    0, 
+                    element->window->scale
+                );
             tab.l = tab.r - 1;
 
             if (tabPane->tabs[end] == '\t') {
@@ -169,7 +175,7 @@ static int _UITabPaneMessage(UIElement *element, UIMessage message, int di, void
                 break;
             }
 
-            tab.l = tab.r - 1;
+            tab.l = tab.r + UI_SIZE_TAB_SPACING - 1;
 
             if (tabPane->tabs[end] == '\t') {
                 position = end + 1;

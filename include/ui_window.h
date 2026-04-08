@@ -7,6 +7,10 @@ extern "C" {
 #endif
 
 
+#ifdef UI_GPU
+    #include "gpu_painter.h"
+    #include "hermes/platforms/sdl3_gpu_context.h"
+#endif
 #include "platform.h"
 #include "ui_element.h"
 #include "ui_painter.h"
@@ -61,6 +65,10 @@ typedef struct UIWindow {
     uint32_t        *bits;
     int              width, height;
     struct UIWindow *next;
+
+#ifdef UI_GPU
+    struct HermesGPUContext *gpu;
+#endif
 
     /* Mouse related */
     UIElement *hovered, *pressed, *focused, *dialogOldFocus;

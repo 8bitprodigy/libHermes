@@ -19,4 +19,5 @@
 
 #ifdef UI_SDL3
 	#include "platforms/sdl3.c"
+	#include "platforms/sdl3_gpu_context.c"
 #endif

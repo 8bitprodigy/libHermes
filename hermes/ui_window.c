@@ -23,8 +23,13 @@ static int UIWindow_Event(UIElement *element, UIMessage message, int di, void *d
         UI_FREE(window->shortcuts);
 
         Hermes_Platform_DestroyWindow(&window->window);
+#ifdef UI_GPU
+        if (window->gpu) {
+            SDL3GPUContext_destroy(window->gpu);
+            window->gpu = NULL;
+        }
+#endif
     }
-
 
     if (message == UI_MSG_LAYOUT && element->childCount) {
         UIElementMove(element->children[0], element->bounds, false);
@@ -253,8 +258,12 @@ end:
 
 void _UIWindowEndPaint(UIWindow *window, UIPainter *painter)
 {
+#ifdef UI_GPU
+    (void)window;
+    (void)painter;
+#else
     Hermes_Platform_render(window, painter);
-    return;
+#endif
 }
 
 

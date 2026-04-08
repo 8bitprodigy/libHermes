@@ -14,6 +14,7 @@ extern "C" {
 
 #define UI_SIZE_TAB_PANE_SPACE_TOP  (2)
 #define UI_SIZE_TAB_PANE_SPACE_LEFT (4)
+#define UI_SIZE_TAB_SPACING (2)
 
 #define UI_SIZE_SPLITTER (8)
 

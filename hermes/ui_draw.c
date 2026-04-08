@@ -2,6 +2,7 @@
 #include "font.h"
 #include "ui.h"
 #include "ui_checkbox.h"
+#include "ui_panel.h"
 #include "ui_string.h"
 #include "utils.h"
 
@@ -211,8 +212,14 @@ UIDrawBorder(
     BorderType border_type
 )
 {
+    UIRectangle inner = UI_RECT_4(
+            r.l + border_size.l,
+            r.r - border_size.r,
+            r.t + border_size.t,
+            r.b - border_size.b
+        );
     uint32_t
-        highlight = shade_color(main_color, 255, 0.3f),
+        highlight = shade_color(main_color, 255, 0.25f),
         shadow    = shade_color(main_color,   0, 0.5f);
 
     if (border_type) {
@@ -222,22 +229,72 @@ UIDrawBorder(
     }
     UIDrawBlock(
             painter, 
-            UI_RECT_4(r.l, r.r, r.t, r.t + border_size.t), 
+            UI_RECT_4(
+                    r.l, 
+                    inner.r, 
+                    r.t, 
+                    inner.t
+                ), 
             highlight
         );
     UIDrawBlock(
             painter, 
-            UI_RECT_4(r.l, r.l + border_size.l, r.t + border_size.t, r.b - border_size.b),
+            UI_RECT_4(
+                    r.l, 
+                    inner.l, 
+                    inner.t, 
+                    inner.b
+                ),
             highlight
         );
     UIDrawBlock(
             painter, 
-            UI_RECT_4(r.r - border_size.r, r.r, r.t + border_size.t, r.b - border_size.b),
+            UI_RECT_4(
+                    inner.r, 
+                    r.r, 
+                    inner.t, 
+                    inner.b
+                ),
             shadow
         );
     UIDrawBlock(
             painter, 
-            UI_RECT_4(r.l, r.r, r.b - border_size.b, r.b), 
+            UI_RECT_4(
+                    inner.l, 
+                    r.r, 
+                    inner.b, 
+                    r.b
+                ), 
+            shadow
+        );
+    /* Upper-Right Corner */
+    UIDrawTriangle(
+            painter, 
+            inner.r, inner.t, 
+            r.r,     r.t, 
+            r.r,     inner.t, 
+            shadow
+        );
+    UIDrawTriangle(
+            painter, 
+            inner.r, inner.t, 
+            inner.r, r.t, 
+            r.r,     r.t, 
+            highlight
+        );
+    /* Lower-Left Corner */
+    UIDrawTriangle(
+            painter, 
+            r.l,     r.b, 
+            r.l,     inner.b, 
+            inner.l, inner.b, 
+            highlight
+        );
+    UIDrawTriangle(
+            painter, 
+            inner.l, inner.b, 
+            inner.l, r.b, 
+            r.l,     r.b, 
             shadow
         );
 }
@@ -263,6 +320,58 @@ UIDrawRectangle(
                 r.b - border_size.b
             ),
         main_color);
+}
+
+
+void
+UIDrawDiamond(
+    UIPainter   *painter, 
+    UIRectangle  r, 
+    uint32_t     color, 
+    unsigned     border_size,
+    BorderType   border_type
+)
+{
+    uint32_t
+        highlight = shade_color(color, 255, 0.25f),
+        ambient   = shade_color(color,   0, 0.125f),
+        shadow    = shade_color(color,   0, 0.5f);
+        
+    if (border_type) {
+        uint32_t swap = highlight;
+        highlight = shadow;
+        shadow    = swap;
+    }
+    
+    UIRectangle inner = UI_RECT_4(
+            r.l + border_size,
+            r.r - border_size,
+            r.t + border_size,
+            r.b - border_size
+        );
+    
+    int 
+        cx = (r.l + r.r) / 2,
+        cy = (r.t + r.b) / 2;
+
+    /* Fill */
+    UIDrawTriangle(painter, inner.l, cy, cx, inner.t, inner.r, cy, color);
+    UIDrawTriangle(painter, inner.r, cy, cx, inner.b, inner.l, cy, color);
+
+    if (!border_size) return;
+    /* ---- BORDER ---- */
+    /* Top-right */
+    UIDrawTriangle(painter, cx, r.t, inner.r, cy, r.r, cy, ambient);
+    UIDrawTriangle(painter, cx, r.t, cx, inner.t, inner.r, cy, ambient);
+    /* Bottom-left */
+    UIDrawTriangle(painter, cx, r.b, inner.l, cy, r.l, cy, ambient);
+    UIDrawTriangle(painter, cx, r.b, cx, inner.b, inner.l, cy, ambient);
+    /* Top-left */
+    UIDrawTriangle(painter, cx, r.t, r.l, cy, inner.l, cy, highlight);
+    UIDrawTriangle(painter, cx, r.t, inner.l, cy, cx, inner.t, highlight);
+    /* Bottom-right */
+    UIDrawTriangle(painter, cx, r.b, r.r, cy, inner.r, cy, shadow);
+    UIDrawTriangle(painter, cx, r.b, inner.r, cy, cx, inner.b, shadow);
 }
 
 
@@ -341,7 +450,6 @@ UIDrawControlDefault(
             uint32_t
                 color     = buttonColor, 
                 textColor = buttonTextColor,
-                
                 highlight = shade_color(color, 255, 0.3f),
                 ambient   = shade_color(color, 127, 0.4f),
                 shadow    = shade_color(color,   0, 0.5f);
@@ -359,57 +467,30 @@ UIDrawControlDefault(
                     midY - UI_SIZE_CHECKBOX_BOX / 2,
                     midY + UI_SIZE_CHECKBOX_BOX / 2
                 );
+            
             int 
                 rad_mid_X = (boxBounds.l + boxBounds.r) / 2,
                 rad_mid_Y = (boxBounds.t + boxBounds.b) / 2;
-
-            /* Background of radio control */
-            UIDrawTriangle(
+                
+            UIDrawDiamond(
                     painter, 
-                    boxBounds.l,     rad_mid_Y, 
-                    rad_mid_X, boxBounds.t, 
-                    boxBounds.r, rad_mid_Y, 
-                    color
-                );
-            UIDrawTriangle(
-                    painter, 
-                    boxBounds.r,     rad_mid_Y, 
-                    rad_mid_X, boxBounds.b, 
-                    boxBounds.l, rad_mid_Y, 
-                    color
-                );
-
-            /* Border of radio control */
-            UIDrawLine(
-                    painter, 
-                    boxBounds.l, rad_mid_Y, 
-                    rad_mid_X,   boxBounds.t,
-                    highlight
-                );
-            UIDrawLine(
-                    painter, 
-                    rad_mid_X   + 1,   boxBounds.t + 1, 
-                    boxBounds.r + 1, rad_mid_Y     + 1, 
-                    ambient
-                );
-            UIDrawLine(
-                    painter, 
-                    boxBounds.r - 1, rad_mid_Y     + 1, 
-                    rad_mid_X   - 1,   boxBounds.b + 1, 
-                    shadow
-                );
-            UIDrawLine(
-                    painter, 
-                    rad_mid_X, boxBounds.b, 
-                    boxBounds.l, rad_mid_Y, 
-                    ambient
+                    boxBounds, 
+                    color, 
+                    2, 
+                    checked || pressed
                 );
             
-            UIDrawString(painter, UIRectangleAdd(boxBounds, UI_RECT_4(1, 0, 2, 0)),
-                        checked ? 
-                            "\u2022"
-                            : " ",
-                        -1, textColor, UI_ALIGN_CENTER, NULL);
+            UIDrawString(
+                    painter, 
+                    UIRectangleAdd(boxBounds, UI_RECT_4(1, 0, 2, 0)),
+                    checked ? 
+                        "\u2022"
+                        : " ",
+                    -1, 
+                    textColor, 
+                    UI_ALIGN_CENTER, 
+                    NULL
+                );
             UIDrawString(
                 painter,
                 UIRectangleAdd(bounds, UI_RECT_4(UI_SIZE_CHECKBOX_BOX + UI_SIZE_CHECKBOX_GAP, 0, 0, 0)),
@@ -423,13 +504,13 @@ UIDrawControlDefault(
             uint32_t 
                 color     = buttonColor, 
                 textColor = buttonTextColor;
-            int borderSize = which == UI_DRAW_CONTROL_MENU_ITEM ? 0 : scale;
+            int border_size = which == UI_DRAW_CONTROL_MENU_ITEM ? 0 : scale;
             UIDrawRectangle(
                     painter, 
                     bounds, 
                     color, 
                     ui.theme.border, 
-                    UI_RECT_1(borderSize), 
+                    UI_RECT_1(border_size), 
                     pressed ? 
                         BORDER_LOWERED 
                         : BORDER_RAISED
@@ -685,7 +766,7 @@ UIDrawControlDefault(
     case UI_DRAW_CONTROL_TAB: {
             uint32_t    color = selected ? ui.theme.buttonNormal : ui.theme.buttonPressed;
             UIRectangle t     = bounds;
-            t.r--;
+            t.r -= UI_SIZE_TAB_SPACING;
             if (selected)
                 t.t--;
             else

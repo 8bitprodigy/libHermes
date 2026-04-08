@@ -95,6 +95,17 @@ Hermes_UpdateUI(void)
             UIElementMessage(e, UI_MSG_WINDOW_UPDATE_BEFORE_PAINT, 0, 0);
 
             if (UI_RECT_VALID(window->updateRegion)) {
+#ifdef UI_GPU
+                UIPainter painter = GPUPainter_create(
+                        window->gpu,
+                        window->width,
+                        window->height
+                    );
+                Hermes_ElementPaint(&window->e, &painter);
+                _UIWindowEndPaint(window, &painter);
+                GPUPainter_destroy(&painter);
+                window->updateRegion = UI_RECT_1(0); 
+#else /* UI_GPU */
                 UIPainter painter = SWPainter_create(
                         window->bits, 
                         window->width, 
@@ -105,7 +116,7 @@ Hermes_UpdateUI(void)
                 DynamicArray_free(painter.clip_stack);
                 UI_FREE(painter.ctx);
                 window->updateRegion = UI_RECT_1(0);
-
+#endif /* UI_GPU */
 #ifdef UI_DEBUG
                 window->lastFullFillCount =
                     (float)painter.fillCount /

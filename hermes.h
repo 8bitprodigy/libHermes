@@ -57,6 +57,7 @@ extern "C" {
 
 #include "hermes/dynamicarray.c"
 #include "hermes/font.c"
+#include "hermes/gpu_painter.c"
 #include "hermes/inspector.c"
 #include "hermes/platform.c"
 #include "hermes/software_painter.c"
