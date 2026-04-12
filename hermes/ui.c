@@ -96,15 +96,12 @@ Hermes_UpdateUI(void)
 
             if (UI_RECT_VALID(window->updateRegion)) {
 #ifdef UI_GPU
-                UIPainter painter = GPUPainter_create(
-                        window->gpu,
-                        window->width,
-                        window->height
-                    );
-                Hermes_ElementPaint(&window->e, &painter);
-                _UIWindowEndPaint(window, &painter);
-                GPUPainter_destroy(&painter);
-                window->updateRegion = UI_RECT_1(0); 
+                window->gpu->begin(window->gpu);
+                window->gpu_painter.clip = UI_RECT_2S(window->width, window->height);
+                Hermes_ElementPaint(&window->e, &window->gpu_painter);
+                _UIWindowEndPaint(window, &window->gpu_painter);
+                window->gpu->present(window->gpu);
+                window->updateRegion = UI_RECT_1(0);
 #else /* UI_GPU */
                 UIPainter painter = SWPainter_create(
                         window->bits, 

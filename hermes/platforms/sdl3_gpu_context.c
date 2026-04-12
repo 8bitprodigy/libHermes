@@ -173,7 +173,7 @@ _SDL3_upload_texture(HermesGPUContext *gpu, uint32_t *bits, int w, int h)
     /*
      * SDL_PIXELFORMAT_ARGB8888 matches Hermes's 0xAARRGGBB uint32 layout on
      * little-endian systems (which is the only layout Hermes targets today).
-     * The glyph atlas stores alpha in the high byte and white in RGB, so
+     * The glyph stores alpha in the high byte and white in RGB, so
      * ARGB8888 reads it correctly.
      */
     SDL_Surface *surface = SDL_CreateSurfaceFrom(

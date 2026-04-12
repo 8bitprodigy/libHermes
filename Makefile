@@ -10,12 +10,12 @@ LIBS_X11   += $(shell pkg-config --libs freetype2)
  
  
 # SDL3 backend
-CFLAGS_SDL3 = -O3 -I. -I./include -DUI_SDL3
+CFLAGS_SDL3 = -g3 -O0 -I. -I./include -DUI_SDL3
 LIBS_SDL3   = -lm
  
 # Optional: comment out these two lines to disable FreeType
 CFLAGS_SDL3 += -DUI_FREETYPE -DUI_UNICODE $(shell pkg-config --cflags freetype2)
-#CFLAGS_SDL3 += -DUI_GPU
+CFLAGS_SDL3 += -DUI_GPU
 LIBS_SDL3   += $(shell pkg-config --libs freetype2)
  
 CFLAGS_SDL3 += $(shell pkg-config --cflags sdl3)

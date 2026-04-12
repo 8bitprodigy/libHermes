@@ -24,6 +24,13 @@ _GPU(UIPainter *painter)
 	return _GPUCtx(painter)->gpu;
 }
 
+static inline void
+_GPUSyncClip(UIPainter *painter)
+{
+    GPUPainterCtx *ctx = _GPUCtx(painter);
+    _GPU(painter)->set_clip(_GPU(painter), painter->clip);
+}
+
 /* Convert uint32 XRGB color to ARGB with full alpha */
 static inline uint32_t
 _ColorWithAlpha(uint32_t color)
@@ -208,6 +215,7 @@ fallback:
 void
 _GPUDrawBlock(UIPainter *painter, UIRectangle r, uint32_t color)
 {
+    _GPUSyncClip(painter);
 	r = UIRectangleIntersection(painter->clip, r);
 	if (!UI_RECT_VALID(r)) return;
 	_GPU(painter)->fill_rect(_GPU(painter), r, _ColorWithAlpha(color));
@@ -222,6 +230,7 @@ _GPUDrawLine(
 	uint32_t   color
 )
 {
+    _GPUSyncClip(painter);
 	_GPU(painter)->draw_line(
 			_GPU(painter), 
 			x0, y0, 
@@ -239,6 +248,7 @@ void _GPUDrawTriangle(
 	uint32_t   color
 )
 {
+    _GPUSyncClip(painter);
 	uint32_t c = _ColorWithAlpha(color);
 	HermesVertex verts[3] = {
 		{ (float)x0, (float)y0, 0, 0, c },
@@ -247,7 +257,7 @@ void _GPUDrawTriangle(
 	};
 	_GPU(painter)->draw_tris(_GPU(painter), verts, 3);
 }
- 
+
  
 void 
 _GPUDrawGlyph(
@@ -257,13 +267,25 @@ _GPUDrawGlyph(
 	uint32_t   color
 )
 {
+    static int last_x = -1, last_y = -1, last_c = -1;
+    if (x == last_x && y == last_y && c == last_c) {
+#ifdef UI_SDL3
+        SDL_Log("DUPLICATE GLYPH '%c' at %d,%d", (char)c, x, y);
+#endif
+    }
+    last_x = x; last_y = y; last_c = c;
+    _GPUSyncClip(painter);
     GPUPainterCtx *ctx   = _GPUCtx(painter);
+    
     GlyphAtlas    *atlas = ctx->atlas;
  
     GlyphAtlasEntry *entry = _GlyphAtlasFind(atlas, c);
     if (!entry) entry = _GlyphAtlasAdd(atlas, c);
     if (!entry) return;
- 
+    
+    GlyphAtlasEntry entryCopy = *entry;
+    entry = &entryCopy;
+    
     // Upload atlas texture if dirty
     if (atlas->dirty || !atlas->texture) {
         if (atlas->texture)
@@ -281,6 +303,23 @@ _GPUDrawGlyph(
     );
     
     ctx->gpu->set_tint(  ctx->gpu, atlas->texture, _ColorWithAlpha(color));
+/*
+    SDL_Log(
+            "glyph '%c'(%d) bounds l=%d r=%d t=%d b=%d dst l=%d r=%d t=%d b=%d offset_x=%d offset_y=%d",
+            (char)c, 
+            c,
+            entry->bounds.l, 
+            entry->bounds.r, 
+            entry->bounds.t, 
+            entry->bounds.b,
+            dst.l, 
+            dst.r, 
+            dst.t, 
+            dst.b,
+            entry->offset_x, 
+            entry->offset_y
+        );
+*/
     ctx->gpu->draw_image(ctx->gpu, dst,            entry->bounds, atlas->texture);
     ctx->gpu->set_tint(  ctx->gpu, atlas->texture, 0xFFFFFFFF);
 }
@@ -289,8 +328,9 @@ _GPUDrawGlyph(
 void
 _GPUDrawImage(UIPainter *painter, UIRectangle dst, uint32_t *bits, int w, int h)
 {
+    _GPUSyncClip(painter);
     dst = UIRectangleIntersection(painter->clip, dst);
-    if (!UI_RECT_VALID(dst)) return;
+    
     // TODO: cache uploaded textures rather than uploading every frame
     HermesGPUTexture *tex = _GPU(painter)->upload_texture(_GPU(painter), bits, w, h);
     if (!tex) return;
@@ -303,6 +343,7 @@ _GPUDrawImage(UIPainter *painter, UIRectangle dst, uint32_t *bits, int w, int h)
 void
 _GPUDrawInvert(UIPainter *painter, UIRectangle r)
 {
+    _GPUSyncClip(painter);
     r = UIRectangleIntersection(painter->clip, r);
     if (!UI_RECT_VALID(r)) return;
     // TODO: proper XOR invert requires a custom blend mode via SDL_ComposeCustomBlendMode
@@ -315,7 +356,7 @@ _GPUDrawCircle(UIPainter *painter, int cx, int cy, int radius, uint32_t fill, ui
 {
     // TODO: hollow and outline not yet handled
     (void)outline; (void)hollow;
-    
+    _GPUSyncClip(painter);
     #define CIRCLE_SEGMENTS 32
     uint32_t c = _ColorWithAlpha(fill);
     HermesVertex verts[CIRCLE_SEGMENTS * 3];

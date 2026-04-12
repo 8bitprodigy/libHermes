@@ -21,6 +21,10 @@ GPUPainterCtx
 	HermesGPUContext *gpu;        // The underlying GPU context
 	UIRectangle      *clip_stack; // DynamicArray of UIRectangle
 	struct GlyphAtlas *atlas;     // Glyph atlas (owned)
+	int 
+		last_glyph_x,
+		last_glyph_y,
+		last_glyph_c;
 }
 GPUPainterCtx;
 

@@ -68,6 +68,7 @@ typedef struct UIWindow {
 
 #ifdef UI_GPU
     struct HermesGPUContext *gpu;
+    UIPainter                gpu_painter;
 #endif
 
     /* Mouse related */

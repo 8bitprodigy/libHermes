@@ -11,21 +11,21 @@ const char *themeItems[] = {
 
 
 UITheme uiThemeClassic = {
-    .panel1   = 0xFFF0F0F0,
-    .panel2   = 0xFFFFFFFF,
+    .panel1   = 0xFF999999,
+    .panel2   = 0xFF4d4d4d,
     .selected = 0xFF94BEFE,
     .border   = 0xFF404040,
 
     .text         = 0xFF000000,
     .textDisabled = 0xFF404040,
-    .textSelected = 0xFF000000,
+    .textSelected = 0xFFE6E6E6,
 
-    .buttonNormal   = 0xFFE0E0E0,
-    .buttonHovered  = 0xFFF0F0F0,
-    .buttonPressed  = 0xFFA0A0A0,
-    .buttonDisabled = 0xFFF0F0F0,
+    .buttonNormal   = 0xFFCCCCCC,
+    .buttonHovered  = 0xFFF2F2F2,
+    .buttonPressed  = 0xFF808080,
+    .buttonDisabled = 0xFF808080,
 
-    .textboxNormal  = 0xFFF8F8F8,
+    .textboxNormal  = 0xFFE6E6E6,
     .textboxFocused = 0xFFFFFFFF,
 
     .codeFocused      = 0xFFE0E0E0,
@@ -37,8 +37,10 @@ UITheme uiThemeClassic = {
     .codeOperator     = 0xFF7F0480,
     .codePreprocessor = 0xFF545D70,
 
-    .accent1 = 0xFF0000,
-    .accent2 = 0x00FF00,
+    .gauge = 0xFF6f7C91,
+
+    .accent1 = 0xA02C2C,
+    .accent2 = 0x2CA02C,
 };
 
 UITheme uiThemeDark = {
@@ -67,6 +69,8 @@ UITheme uiThemeDark = {
     .codeNumber       = 0xFFC3F5D3,
     .codeOperator     = 0xFFF5D499,
     .codePreprocessor = 0xFFF5F3D1,
+
+    .gauge = 0xFF4B5874,
 
     .accent1 = 0xF01231,
     .accent2 = 0x45F94E,

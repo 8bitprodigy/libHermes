@@ -25,6 +25,7 @@ static int UIWindow_Event(UIElement *element, UIMessage message, int di, void *d
         Hermes_Platform_DestroyWindow(&window->window);
 #ifdef UI_GPU
         if (window->gpu) {
+            GPUPainter_destroy(&window->gpu_painter);
             SDL3GPUContext_destroy(window->gpu);
             window->gpu = NULL;
         }
@@ -246,7 +247,9 @@ bool _UIWindowInputEvent(UIWindow *window, UIMessage message, int di, void *dp)
     }
 
 end:
+#ifndef UI_SDL3
     Hermes_UpdateUI();
+#endif
     return handled;
 }
 

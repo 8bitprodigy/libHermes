@@ -124,7 +124,9 @@ Hermes_Platform_CreateWindow(
     if (!window->gpu) {
         // handle error - SDL3GPUContext_create already called SDL_CreateRenderer internally
         SDL_Log("Failed to create GPU context: %s", SDL_GetError());
+        return;
     }
+    window->gpu_painter = GPUPainter_create(window->gpu, width, height);
 #endif
     
     if (flags & UI_WINDOW_CENTER_IN_OWNER && window->owner) {
@@ -227,7 +229,9 @@ _SDLProcessEvent(SDL_Event *ev)
         }
 
     case SDL_EVENT_WINDOW_EXPOSED:
+#ifndef UI_GPU
         if (window) UIElementRepaint(&window->e, NULL);
+#endif
         break;
 
     case SDL_EVENT_WINDOW_FOCUS_GAINED:
@@ -306,7 +310,7 @@ bool _UIMessageLoopSingle(int *result)
     SDL_Event ev;
 
     // Paint any pending updates before blocking
-    Hermes_UpdateUI();
+    //Hermes_UpdateUI();
     
     if (ui.animatingCount) {
         if (SDL_PollEvent(&ev)) {

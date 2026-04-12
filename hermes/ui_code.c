@@ -507,7 +507,9 @@ int UIDrawStringHighlighted(UIPainter *painter, UIRectangle lineBounds, const ch
             while (ti % tabSize)
                 x += GLYPH_ADVANCE(c), ti++, j++;
         } else {
-            UIDrawGlyph(painter, x, y, c, colors[tokenType]);
+            bool willRedraw = selection && j >= selection->carets[0] && j < selection->carets[1];
+            if (!willRedraw)
+                UIDrawGlyph(painter, x, y, c, colors[tokenType]);
             x += GLYPH_ADVANCE(c), ti++;
         }
 

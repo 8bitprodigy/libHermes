@@ -32,6 +32,7 @@ typedef enum UIThemeItem {
     UIThemeItem_codeNumber,
     UIThemeItem_codeOperator,
     UIThemeItem_codePreprocessor,
+    UIThemeItem_gauge,
     UIThemeItem_accent1,
     UIThemeItem_accent2,
     UIThemeItem_MAX,
@@ -47,6 +48,7 @@ typedef struct UITheme {
             uint32_t textboxNormal, textboxFocused;
             uint32_t codeFocused, codeBackground, codeDefault, codeComment, codeString, codeNumber,
                 codeOperator, codePreprocessor;
+            uint32_t gauge;
             uint32_t accent1, accent2;
         };
         uint32_t colors[UIThemeItem_MAX];
